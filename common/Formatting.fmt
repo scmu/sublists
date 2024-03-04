@@ -1,0 +1,52 @@
+
+%%\newcommand*{\circo}{\mathrel{\scalebox{0.6}{$\circ$}}}
+
+\newcommand{\circo}{\mathrel{\kern 0.12em%
+      \raisebox{1pt}{\tikz \draw[line width=0.6pt] circle(1.1pt);}%
+      \kern 0.12em}}
+
+\newlength{\mylen}
+\setbox1=\hbox{$\bullet$}\setbox2=\hbox{\tiny$\bullet$}
+\setlength{\mylen}{\dimexpr0.5\ht1-0.5\ht2}
+\newcommand*{\bigcdot}{\raisebox{\mylen}{\tiny$\bullet$}}
+\newcommand{\myapply}{\mathrel{\kern 0.12em\scalebox{0.8}{\$}\kern 0.12em}}
+
+\renewcommand{\Conid}[1]{{\mathsf{#1}}}
+
+%format . = "\circo"
+%format `comp_`   = "\circo "
+%format $ = "\myapply"
+
+%format `qsep` = "\,~\bigcdot\,~"
+%if style == poly
+%format ^ = "\hspace{0.3em}"
+%format ^^ = "\hspace{1.5em}"
+%else
+%format ^ = " "
+%format ^^ = " "
+%endif
+
+%if style == poly
+%format `elem` = "\in"
+%format `notElem` = "\not\in"
+%format EXP x (p) = x "^{" p "}"
+%%format == = "\mathrel{==}"
+%format == = "\doubleequals"
+%format /= = "\ne"
+%format ++ = "\mathbin{{+}\mskip-8mu{+}}"
+%format `approx` = "\approx"
+%format `comp` = "\circo"
+
+%format <=> = "\mathrel{\equiv}"
+%format <==> = "\Leftrightarrow"
+%format ==> = "\Rightarrow"
+%format <== = "\Leftarrow"
+%format ===> = "\Longrightarrow"
+
+%format === = "\mathrel{=}"
+
+%format unlhd = "(\unlhd)"
+%format `unlhd` = "\unlhd"
+%format lhd = "(\lhd)"
+%format `lhd` = "\lhd"
+%endif
