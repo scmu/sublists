@@ -125,8 +125,7 @@ The resulting bottom-up algorithm is concise, elegant, but also cryptic --- all 
 \begin{figure}
 \centering
 \includegraphics[width=0.85\textwidth]{pics/ch-lattice.pdf}
-\caption{Computing |h "abcde"| bottom-up.
-The lines are colored for easy grouping.}
+\caption{Computing |h "abcde"| bottom-up.}
 \label{fig:ch-lattice}
 \end{figure}
 
