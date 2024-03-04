@@ -65,7 +65,7 @@ infixr 0 ===
 
 \counterwithout{equation}{section}
 
-%format rep' (k) f = "{"f"}^{"k"}"
+%format iter' (k) f = "{"f"}^{"k"}"
 
 \begin{document}
 
@@ -80,11 +80,12 @@ Institute of Information Science, Academia Sinica
 \maketitle
 
 \begin{abstract}
-Some top-down problem specifications, if executed, may compute sub-problems repeatedly. Instead, we may want a bottom-up algorithm that stores solutions of sub-problems in a table to be reused.
-How the table can be represented and efficiently maintained, however, can be tricky.
+Some top-down problem specifications, if executed directly, may compute sub-problems repeatedly.
+Instead, we may want a bottom-up algorithm that stores solutions of sub-problems in a table to be reused.
+It can be tricky, however, to figure out how the table can be represented and efficiently maintained.
 We study a special case: computing a function |h| taking lists as inputs such that |h xs| is defined in terms of all immediate sublists of |xs|.
 Richard Bird studied this problem in 2008, and presented a concise but cryptic algorithm without much explanation.
-We give this algorithm a proper derivation, and discovered a key property that allows it to work.
+We give this algorithm a proper derivation, and discover a key property that allows it to work.
 The algorithm builds trees that have certain shapes --- the sizes along the left spine is a diagonal in Pascal's triangle.
 The crucial function we derive transforms one diagonal to the next.
 \end{abstract}
@@ -100,9 +101,10 @@ For example, as seen in Figure \ref{fig:td-call-tree}, |h "abcd"| depends on |h 
 %
 In this top-down manner, to compute |h "abc"| we make calls to |h "ab"|, |h "ac"|, and |h "bc"|; to compute |h "abd"|, we make a call to |h "ab"| as well --- many values end up being re-computed.
 %
-One would like to instead proceed in a bottom-up manner, storing computed values such that they can be reused.
+One would like to instead proceed in a bottom-up manner, storing computed values so that they can be reused.
 %
-For this problem, one might want to build a lattice-like structure, like that in Figure~\ref{fig:ch-lattice}, from bottom to top, such that each level reuses values computed in the level below it.
+For this problem, one might want to build a lattice-like structure, like that in Figure~\ref{fig:ch-lattice}, from bottom to top,
+sharing the value on one layer that are used in constructing the next layer.
 
 \begin{figure}[h]
 \centering
@@ -117,22 +119,23 @@ with ingredients that satisfy certain properties,
 there is an equivalent bottom-up algorithm that stores intermediate results in a table.
 The ``all immediate sublists'' instance was the last example of the paper.
 To satisfy the said properties, however, Bird had to introduce additional data structures and helper functions out of the blue.
-Rationale for designing these data structures and functions was not obvious, nor was it clear why the needed properties are met.
-The resulting bottom-up algorithm is concise, elegant, but also cryptic --- all the more reason to present a proper calculation it deserves.
+The rationale for designing these data structures and functions was not obvious, nor was it clear why the needed properties are met.
+The resulting bottom-up algorithm is concise, elegant, but also cryptic --- all the more reason to present the proper calculation it deserves.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.85\textwidth]{pics/ch-lattice.pdf}
-\caption{Computing |h "abcde"| bottom-up.}
+\caption{Computing |h "abcde"| bottom-up.
+The lines are colored for easy grouping.}
 \label{fig:ch-lattice}
 \end{figure}
 
 In this pearl we review this problem, present an alternative specification, and derive Bird's algorithm.
-It turns out that the key property we rely on is different from that in \cite{Bird:08:Zippy}.
+It turns out that the key property we rely on is different from that in Bird's \citeyearpar{Bird:08:Zippy}.
 Driven by this property, our main derivation is much more straight-forward.
-This suggests that, while many bottom-up algorithms look alike, the reason why they work may be more diverse than we thought, and there are a lot more to be discovered regarding reasoning about their correctness.
+This suggests that, while many bottom-up algorithms look alike, the reasons why they work may be more diverse than we thought, and there is a lot more to be discovered regarding reasoning about their correctness.
 
-Before we start, one might ask: are there actually such problems, whose solution of input |xs| depends only on solutions of immediate sublists of |xs|?
+Before we start, one might ask: are there actually problems whose solution of input |xs| depends only on solutions for immediate sublists of |xs|?
 It turns out that it is quite common.
 While problems such as \emph{minimum editing distance} or \emph{longest common subsequence} are defined on two lists,
 it is known in the algorithm community that, with clever encoding, they can be rephrased as problems defined on one list,
@@ -153,12 +156,12 @@ map' = map
 \label{sec:spec}
 
 We use a Haskell-like notation throughout the paper.
-Like in Haskell, if a function is defined by multiple clauses, the patterns and guards are matched in the order they appear.
-Differences from Haskell include that we allow |n+k| pattern, and that we denote the type of list by |L|.
-Since we will use natural transformations and |map| a lot, for brevity we denote the |map| function of lists as |map' :: (a -> b) -> L a -> L b| (note that |map'| is written in italic font, to be distinguished from the type constructor |L|).
+Like in Haskell, if a function is defined by multiple clauses, the patterns and guards are matched top to bottom.
+Differences from Haskell include that we allow |n+k| patterns, and that we denote the type of lists by |L|.
+Since we will use natural transformations and |map| a lot, for brevity we denote the |map| function of lists as |map' :: (a -> b) -> L a -> L b| (note that |map'| is written in italic font, to distinguish it from the type constructor |L|).
 
 The immediate sublists of a list can be specified in many ways.
-We use the definition below mainly because the order of sublists it generates is more intuitive for the readers:
+We use the definition below mainly because it generates sublists in an intuivite order:
 \begin{code}
 subs :: L a -> L (L a)
 subs []      = []
@@ -211,26 +214,27 @@ The intention is that |td n| is a function defined on lists of length exactly |1
 Given input |xs|, the value we aim to compute is |h xs = td (length xs - 1) xs|.
 This definition will be handy later.
 
-The function |rep k| composes a function with itself |k| times:
+The function |iter k| composes a function with itself |k| times:
 \begin{spec}
-rep :: Nat -> (a -> a) -> a -> a
-rep 0      f = id
-rep (1+k)  f = rep k f . f {-"~~."-}
+iter :: Nat -> (a -> a) -> a -> a
+iter 0      f = id
+iter (1+k)  f = iter k f . f {-"~~."-}
 \end{spec}
 %if False
 \begin{code}
-rep :: Nat -> (a -> a) -> a -> a
-rep 0  f = id
-rep k  f = rep (k-1) f . f {-"~~."-}
+iter :: Nat -> (a -> a) -> a -> a
+iter 0  f = id
+iter k  f = iter (k-1) f . f {-"~~."-}
 
-rep' :: Nat -> (a -> a) -> a -> a
-rep' = rep
+iter' :: Nat -> (a -> a) -> a -> a
+iter' = iter
 \end{code}
 %endif
-For brevity, we will write |rep k f| as |rep' k f| for the rest of this pearl.
+For brevity, we will write |iter k f| as |iter' k f| for the rest of this pearl.
 The bottom-up algorithm we aim to construct has the following form:
 \begin{spec}
-bu n = post . rep' n step . pre {-"~~,"-}
+bu :: Nat -> L X -> Y
+bu n = post . iter' n step . pre {-"~~,"-}
 \end{spec}
 where |pre| preprocesses the input and builds the lowest level in Figure \ref{fig:ch-lattice},
 and each |step| builds a level from the one below.
@@ -263,9 +267,13 @@ The aim of this pearl is to construct |pre|, |step|, and |post| such that |td = 
 \section{Building a New Level}
 \label{sec:build-level}
 
+%{
+\newcommand{\dqoute}{\mathtt{"}}
+%subst string a = "\mathtt{\dqoute " a "\dqoute}"
+
 To find out what |step| might be, we need to figure out how to specify a level, and what happens when a level is built from the one below it.
 We use Figure~\ref{fig:ch-lattice} as our motivating example.
-As one can see, level |2| in Figure~\ref{fig:ch-lattice} consists of sublists of |"abcde"| that have length |2|, and level |3| consists of sublists having length |3|, etc.
+As one can see, level |2| in Figure~\ref{fig:ch-lattice} consists of sublists of |"abcde"| that have length |2|, and level |3| consists of sublists having length |3|, and so on.
 Let |choose k xs| denote choosing |k| elements from the list |xs|:
 \begin{spec}
 choose :: Nat -> L a -> L (L a)
@@ -281,9 +289,10 @@ choose k  xs      |  k == length xs = [xs]
 choose k  (x:xs)  =  map' (x:) (choose (k-1) xs) ++ choose k xs{-"~~."-}
 \end{code}
 %endif
-Its definition follows basic combinatorics: the only way to choose |0| elements from a list is |[]|; if |length xs = k|, the only way to choose |k| elements is |xs|. Otherwise, to choose |1+k| elements from |x:xs|, one can either keep |x| and choose |k| from |xs|, or choose |1+k| elements from |xs|.
+Its definition follows basic combinatorics: the only way to choose |0| elements from a list is |[]|; if |length xs = k|, the only way to choose |k| elements is |xs|. Otherwise, to choose |1+k| elements from |x:xs|, one can either keep |x| and choose |k| from |xs|, or discard |x| and choose |1+k| elements from |xs|.
 For example, |choose 3 "abcde"| yields
 |["abc","abd","abe","acd","ace","ade",| |"bcd","bce","bde","cde"]|.
+%}
 
 Note that |choose k xs| is defined only when |k <= length xs|.
 Note also that |subs| is a special case of |choose| --- we have |subs xs = choose (length xs -1) xs|, a property we will need later.
@@ -302,24 +311,19 @@ we wish to have a function |upgrade :: L Y -> L (L Y)| that is able to somehow b
   upgrade (map' h (choose 2 "abcde")) =
    [[h "ab", h "ac", h "bc"], [h "ab", h "ad", h "bd"], [h "ab", h "ae", h "be"] ...] {-"~~."-}
 \end{spec}
-With |[h "ab", h "ac", h "bc"]| one can compute |h "abc"|, and with
-|[h "ab", h "ad", h "bd"]| one can compute |h "abd"|, etc.
+With |[h "ab", h "ac", h "bc"]| one can compute |h "abc"|; with
+|[h "ab", h "ad", h "bd"]| one can compute |h "abd"|, and so on.
 That is, if we apply |map' g| to the result of |upgrade| above, we get:
 \begin{spec}
    [h "abc", h "abd", h "abe", h "acd"...] {-"~~,"-}
 \end{spec}
 which is level |3|, or |map' h (choose 3 "abcde")|.
-The function |upgrade| need not inspect the values of each element, but rearrange them by position --- it is a natural transformation |L a -> L (L a)|.
+The function |upgrade| needs not inspect the values of each element, but rearranges them by position --- it is a natural transformation |L a -> L (L a)|.
 As far as |upgrade| is concerned, it does not matter whether |h| is applied or not.
 Letting |h = id|, observe that |upgrade (choose 2 "abcde") =|
 |[["ab", "ac", "bc"], ["ab", "ad", "bd"]...]| and
 |choose 3 "abcde" =|  |["abc", "abd", "abe", "acd"...]|
-are related by |map' subs|.
-%% Observe that, letting |h = id|, the lists |[["ab", "ac", "bc"], ["ab", "ad", "bd"]...]| and |["abc", "abd", "abe", "acd"...]| are related by |map' subs|.
-%}
-%% Furthermore, |upgrade| need not inspect the contents of its input ---
-%% it can be a natural transformation |L a -> L (L a)|.
-%% If such a function |upgrade| can be constructed,
+are related by |map' subs|:
 each |step| we perform in the bottom-up algorithm could be |map' g . upgrade|.
 
 Formalising the observations above, we want |upgrade :: L a -> L (L a)| to satisfy:
@@ -869,7 +873,7 @@ That gives us the last |mapB g . up|.
 For the other steps, the following lemma shows that |mapB (td' n) . ch (1+n)| can be performed by |n| steps of |mapB g . up|, after some preprocessing.
 This is the key lemma that relates \eqref{eq:up-spec-B} to the main algorithm.
 \begin{lemma}\label{lma:main}
-|mapB (td' n) . ch (1+n) = rep' n (mapB g . up) . mapB ex . ch 1|.
+|mapB (td' n) . ch (1+n) = iter' n (mapB g . up) . mapB ex . ch 1|.
 \end{lemma}
 \begin{proof}
 For |n := 0| both sides simplify to |mapB ex . ch 1|. For |n := 1 + n|:
@@ -888,16 +892,16 @@ derLma n =
  ===    {- |up| natural -}
      mapB g . up . mapB (td' n) . ch (1+n)
  ===    {- induction -}
-     mapB g . up . rep' n (mapB g . up) . mapB ex . ch 1
- ===    {- |(.)| associative, def. of |rep' n f| -}
-     rep' (1+n) (mapB g . up) . mapB ex . ch 1 {-"~~."-}
+     mapB g . up . iter' n (mapB g . up) . mapB ex . ch 1
+ ===    {- |(.)| associative, def. of |iter' n f| -}
+     iter' (1+n) (mapB g . up) . mapB ex . ch 1 {-"~~."-}
 \end{code}
 \end{proof}
 
 In summary, we have shown that:
 \begin{theorem} For all |n :: Nat| we have |td n = bu n|, where
 \begin{code}
-bu n = unT . rep' n (mapB g . up) . mapB ex . ch 1 . map' f {-"~~."-}
+bu n = unT . iter' n (mapB g . up) . mapB ex . ch 1 . map' f {-"~~."-}
 \end{code}
 \end{theorem}
 \noindent That is, the top-down algorithm |td n| is equivalent to a bottom-up algorithm |bu n|, where the input is preprocessed by |mapB ex . ch 1 . map' f|, followed by |n| steps of |mapB g . up|. By then we will get a singleton tree, whose content can be extracted by |unT|.
@@ -916,9 +920,9 @@ derMain n =
  ===    {- calculation before -}
    unT . mapB g . up . mapB (td' n) . ch (1+n) . map' f
  ===    {- Lemma~\ref{lma:main} -}
-   unT . mapB g . up . rep' n (mapB g . up) . mapB ex . ch 1 . map' f
- ===    {- |(.)| associative, def. of |rep' n f| -}
-   unT . rep' (1+n) (mapB g . up) . mapB ex . ch 1 . map' f
+   unT . mapB g . up . iter' n (mapB g . up) . mapB ex . ch 1 . map' f
+ ===    {- |(.)| associative, def. of |iter' n f| -}
+   unT . iter' (1+n) (mapB g . up) . mapB ex . ch 1 . map' f
  ===    {- definition of |bu| -}
    bu (1+n) {-"~~."-}
 \end{code}
@@ -927,7 +931,7 @@ derMain n =
 \section{Conclusion and Discussions}
 
 %format mapF = "\Varid{F}"
-%format reps f = "{" f "}^{*}"
+%format iters f = "{" f "}^{*}"
 
 
 The sublists problem was one of the examples of \cite{BirdHinze:03:Trouble}, in which they studied memoisation of functions, with a twist: the memo table is structured according to the call graph of the function, using trees of shared nodes (which they called \emph{nexuses}).
@@ -950,7 +954,7 @@ The function |dc :: L a -> F (L a)| decomposes an |L| into an |F| structure of |
 In the simplest example, |L| is the type of lists, |F a = (a,a)|, and |dc xs = (init xs, tail xs)| (e.g. |dc "abcd" = ("abc", "bcd")|).
 
 %One of the aims of~\cite{Bird:08:Zippy} was to study tabulation in bottom-up algorithms, therefore Bird introduced another data structure, the \emph{nexus} (which was not needed in the sublists example, however).
-A simplified version of Bird's generic bottom-up algorithm, without the nexus, is something like: |bu = ex . reps (map' g . cd) . map' f|.
+A simplified version of Bird's generic bottom-up algorithm, without the nexus, is something like: |bu = ex . iters (map' g . cd) . map' f|.
 The pre and postprocessing are respectively |map' f| and |ex|, while |map' g . cd| is repeatedly performed until we have a singleton.
 The function |cd :: L a -> L (F a)| transforms one level to the next.
 Note that its return type is symmetric to that of |dc| (hence the name |cd|, probably). For the |dc| above, we let |cd| be the function that combines adjacent elements of a list into pairs, e.g., |cd "abcd" = [("a",b), ("b", "c"), ("c","d")]|.
@@ -1002,7 +1006,7 @@ and we need only one inductive proof.
 
 %} %% emph
 
-The moral of this story is that, while many bottom-up algorithms look alike --- they all have the form |post . reps step . pre|, the reason why they work could be very different.
+The moral of this story is that, while many bottom-up algorithms look alike --- they all have the form |post . iters step . pre|, the reason why they work could be very different.
 It is likely that there are more patterns yet to be discovered.
 
 \paragraph*{Acknowledgements}~ The author would like to thank Hsiang-Shang Ko and Jeremy Gibbons for much in-depth discussions throughout the development of this work, and Yu-Hsuan Wu and Chung-Yu Cheng for proof-reading drafts of this pearl.
