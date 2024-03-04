@@ -359,7 +359,7 @@ For |choose (1+k) xs| on the RHS to be defined, we need |1+k <= length xs|.
 %
 Meanwhile, no |upgrade| could satisfy \eqref{eq:up-spec-list} when |k = 0|:
 on the LHS, |upgrade| cannot distinguish between |choose 0 "ab"| and |choose 0 "abc"|,
-both evaluting to |[[]]|, while on the RHS |choose 1 "ab"| and |choose 1 "abc"| have different shapes.
+both evaluating to |[[]]|, while on the RHS |choose 1 "ab"| and |choose 1 "abc"| have different shapes.
 %
 Therefore we only demand \eqref{eq:up-spec-list} to hold when |1 <= k|,
 which is sufficient because we only apply |upgrade| to level |1| and above.
@@ -373,7 +373,7 @@ We may proceed with \eqref{eq:up-spec-list} and construct |upgrade|.
 We will soon meet a small obstacle: in an inductive case
 |upgrade| will receive a list computed by |choose (1+k) (x:xs)| that
 needs to be split into |map' (x:) (choose k xs)| and |choose (1+k) xs|.
-This can be done, but rather tediously.
+This can be done, but it is rather tedious.
 %
 This is a hint that some useful information has been lost when we represent levels by lists.
 To make the job of |upgrade| easier, we switch to a more informative data structure.
@@ -398,7 +398,7 @@ zipBW = undefined
 \end{code}
 %endif
 The function |mapB f| applies |f| to every tip of the given tree.
-Like |map|, we also write |mapB| as $\Varid{B}$.
+Like that with lists, we also write |mapB| as $\Varid{B}$.
 Given two trees |t| and |u| having the same shape,
 |zipBW f t u| ``zips'' the trees together, applying |f| to values on the tips.
 If |t| and |u| have different shapes, |zipBW f t u| is undefined.
@@ -422,10 +422,8 @@ ch k  (x:xs)  =  N (mapB (x:) (ch (k-1) xs)) (ch k xs) {-"~~."-}
 %endif
 The function |ch| resembles |choose|.
 In the first two clauses, |T| corresponds to a singleton list.
-In the last clause, |ch| is like |choose| but, instead of appending the results of the two recursive calls, we store the results in the two branches of the binary tree, thus keep record of how the choices were made:
-if |ch _ (x:xs) = N t u|, the subtree |t| contains all the tips with |x| chosen, while |u| contains all the tips with |x| not chosen.
-This is probably why \cite{Bird:08:Zippy} calls the data structure a \emph{binomial tree}, hence the name |B|.%
-\footnote{It is not directly related to the tree, having the same name, used in \emph{binomial heaps}.}
+In the last clause, |ch| is like |choose| but, instead of appending the results of the two recursive calls, we store the results in the two branches of the binary tree, thus recording how the choices were made:
+if |ch _ (x:xs) = N t u|, the subtree |t| contains all the tips with |x| chosen, while |u| contains all the tips with |x| discarded.
 
 \begin{figure}
 \centering
@@ -447,12 +445,12 @@ This is probably why \cite{Bird:08:Zippy} calls the data structure a \emph{binom
 \label{fig:ch-examples}
 \end{figure}
 
-The counterpart of |upgrade| on trees, which we call |up|, will be a natural transformation of type |B a -> B (L a)|, satisfying the following property:
+The counterpart of |upgrade| on trees, which we will call |up|, is a natural transformation of type |B a -> B (L a)|, satisfying the following property:
 \begin{equation}
 \label{eq:up-spec-B}
 \begin{split}
-&  |(forall xs, k : 2 <= 1+k <= length xs| \,: \\
-&   \qquad |up (ch k xs) = mapB subs (ch (1+k) xs) ) {-"~~."-}|
+&  |(forall xs, k: 2 <= 1+k <= length xs| \,: \\
+&   \qquad |up (ch k xs) = mapB subs (ch (1+k) xs) ){-"~~."-}|
 \end{split}
 \end{equation}
 %if False
@@ -467,13 +465,13 @@ Now we are ready to derive |up|.
 
 \subsection{The Derivation}
 
-The derivation proceeds by trying to construct a proof of \eqref{eq:up-spec-B} and, when stuck, pause to think about how |up| should be defined to allow the proof to go through.
+The derivation proceeds by trying to construct a proof of \eqref{eq:up-spec-B} and, when stuck, pausing to think about how |up| should be defined to allow the proof to go through.
 That is, the definition of |up| and a proof that it satisfies \eqref{eq:up-spec-B} are developed hand-in-hand.
 
 The proof, if constructed, will be an induction on |xs|.
 The case analysis follows the shape of |ch (1+k) xs| (on the RHS of \eqref{eq:up-spec-B}).
 Therefore, there is a base case, a case when |xs| is non-empty and |1+k = length xs|, and a case when |1+k < length xs|.
-However, since the constraints demand that |xs| has at least two elements, the base case will be |xs := [y,z]|, and in the inductive cases the length of the list will be at least |3|.
+However, since the constraints demand that |xs| has at least two elements, the base case will be lists of length |2|, and in the inductive cases the length of the list will be at least |3|.
 
 \paragraph*{Case 1.~~} |xs := [y,z]|.\\
 The constraints force |k| to be |1|.
@@ -511,7 +509,7 @@ For this case we will construct
 \begin{spec}
 up (N t (T q)) = T (unT (up t) ++ [q]) {-"~~."-}
 \end{spec}
-In this case, |up t| always return a |T|.
+In this case, |up t| always returns a |T|.
 The function |unT (T p) = p| removes the constructor and exposes the list it contains.
 While the correctness of this case is established by the constructed proof, a complementary explanation why |up t| always returns a singleton tree and thus |unT| always succeeds is given in Section~\ref{sec:deptypes}.
 
@@ -573,14 +571,14 @@ Expressions \eqref{eq:up3R} and \eqref{eq:up3L} can be unified if we define
 \begin{spec}
      up (N t u) = N ??? (up u) {-"~~."-}
 \end{spec}
-The missing part "???" shall be an expression that is allowed to use only the two subtrees |t| and |u| that |up| receives.
+The missing part |???| shall be an expression that is allowed to use only the two subtrees |t| and |u| that |up| receives.
 Given |t = mapB (x:) (ch k xs)| and |u = ch (1+k) xs| (from \eqref{eq:up3L})
 this expression shall evaluate to the subexpression in \eqref{eq:up3R}:
 \begin{spec}
     mapB (subs . (x:)) (ch (1+k) xs) {-"~~."-}
 \end{spec}
 
-It may appear that, now that |up| already has |u = ch (1+k) xs|, the "???" may simply be |mapB (sub . (x:)) u|. The problem is that the |up| does not know what |x| is --- unless |k = 0|.
+It may appear that, now that |up| already has |u = ch (1+k) xs|, the |???| may simply be |mapB (sub . (x:)) u|. The problem is that the |up| does not know what |x| is --- unless |k = 0|.
 
 \paragraph*{Case 3.1.~~} |k = 0|.
 We can recover |x| from |mapB (x:) (ch 0 xs)| if |k| happens to be |0| because:
@@ -677,7 +675,7 @@ unT (T x) = x
 \end{code}
 %endif
 Using |(++)| and |snoc| may look inefficient, but had we specified |choose| slightly differently, the |up| we derive would use |(:)| instead.
-Again, we defined |choose| this way merely to generate sublists in a order that is more comprehensible to the readers.
+Again, we defined |choose| this way merely to generate sublists in an intuitive order.
 
 \begin{figure}[h]
 \centering
@@ -696,17 +694,17 @@ Again, we defined |choose| this way merely to generate sublists in a order that 
 %format u3
 
 \paragraph*{An Example.}~~
-To demonstrate how |up| works, shown in the bottom of Figure~\ref{fig:up-2-3-demo} is the tree built by |mapB h (ch 2 "abcde")|.
+To demonstrate how |up| works, shown at the bottom of Figure~\ref{fig:up-2-3-demo} is the tree built by |mapB h (ch 2 "abcde")|.
 If we apply |up| to this tree,
-the fourth clause of |up| is matched, and we traverses along its right spine until reaching |t0|,
+the fourth clause of |up| is matched, and we traverse along its right spine until reaching |t0|,
 which matches the second clause of |up|, and a singleton tree containing |[h "cd", h "ce", h "de"]| is generated.
 
-Traversing backwards, |up t1| generates |u0|, which shall have the same shape as |t0| and can be zipped together to form |u1|. Similarly, |up t3| generates |u2|, which shall have the same shape as |t2|. Zipping them together, we get |u3|. They constitute |mapB h (ch 3 "abcde")|, shown in the top of Figure~\ref{fig:up-2-3-demo}.
+Traversing backwards, |up t1| generates |u0|, which shall have the same shape as |t0| and can be zipped together to form |u1|. Similarly, |up t3| generates |u2|, which shall have the same shape as |t2|. Zipping them together, we get |u3|. They constitute |mapB h (ch 3 "abcde")|, shown at the top of Figure~\ref{fig:up-2-3-demo}.
 
 \subsection{Interlude: Shape Constraints with Dependent Types}
 \label{sec:deptypes}
 
-While the derivation guarantees that the function |up|, as defined above, satisfies \eqref{eq:up-spec-B}, the partialty of |up| still makes one uneasy.
+While the derivation guarantees that the function |up|, as defined above, satisfies \eqref{eq:up-spec-B}, the partiality of |up| still makes one uneasy.
 Why is it that |up t| in the second clause always returns a |T|?
 What guarantees that |up t| and |u| in the last clause always have the same shape and can be zipped together?
 In this section we try to gain more understanding of the tree construction with the help of dependent types.
@@ -727,7 +725,7 @@ data B (a : Set) : Nat -> Nat -> Set where
   Tn  : a -> B a (suc n) (suc n)
   N   : B a k n -> B a (suc k) n -> B a (suc k) (suc n) {-"~~."-}
 \end{spec}
-The intention is that |B a k n| is the tree representing choosing |k| elements in a list of length |n|.
+The intention is that |B a k n| is the tree representing choosing |k| elements from a list of length |n|.
 Notice that the changes of indices in |B| follow the definition of |ch|.
 We now have two base cases, |T0| and |Tn|, corresponding to choosing |0| elements and all elements from a list.
 A tree |N t u : B a (1+k) (1+n)| represents choosing |1+k| elements from a list of length |1+n|, and the two ways to do so are |t : B a k n| (choosing |k| from |n|) and |u : B a (1+k) n| (choosing |1+k| from |n|).
@@ -782,10 +780,10 @@ The type states that it is defined only for |0 < k < n|;
 the shape of its input tree is determined by |(k,n)|; the output tree has shape determined by |(1+k,n)|, and the values in the tree are lists of length |1+k|.
 
 The first three clauses of |up| eliminate impossible cases.
-The remaining four clauses are essentialy the same as simply-typed version,
+The remaining four clauses are essentially the same as the non-dependently typed version,
 modulo the additional arguments and proof terms, shown in light brown, that are needed to prove that |k| and |n| are within bounds.
 In the clause that uses |unT|, the input tree has the form |N t (Tn q)|.
-That the right subtree being a |Tn| enforces the other subtree |t| to have type
+The right subtree being a |Tn| forces the other subtree |t| to have type
 |B a (1+k) (2+k)| --- the two indices must differ by |1|. Therefore |up t| has type |B a (2+k) (2+k)| and must be built by |Tn|.
 The last clause receives inputs having type |B a (2+k) (2+n)|. Both |u| and |up t| have types |B ... (2+k) (1+n)| and, therefore, have the same shape.
 %}
@@ -799,12 +797,15 @@ The last clause receives inputs having type |B a (2+k) (2+n)|. Both |u| and |up 
 \end{figure}
 
 \paragraph*{Pascal's Triangle.}~~
-With so much discussion about choosing, it is perhaps not surprising to the readers that the sizes of subtrees along the right spine of a |B| tree correspond to diagonals in Pascal's Triangle.
-After all, the |k|-th diagonal (counting from zero) in Pascal's Triangle denotes the numbers of ways to choose |k| elements from |k|, |k+1|, |k+2|... elements.
-See Figure~\ref{fig:pascal-tri}.
-For example, the sizes along the right spine of |ch 2 "abcde"|, that is, |10,6,3,1|, is the second diagonal (in orange), while the right spine of |ch 3 "abcde"| is the fourth diagonal (in blue).
+With so much discussion about choosing, it is perhaps not surprising that the sizes of subtrees along the right spine of a |B| tree correspond to diagonals in Pascal's Triangle.
+After all, the |k|-th diagonal (counting from zero) in Pascal's Triangle denotes binomial coefficients --- the numbers of ways to choose |k| elements from |k|, |k+1|, |k+2|... elements.
+This is probably why \cite{Bird:08:Zippy} calls the data structure a \emph{binomial tree}, hence the name |B|.
+\footnote{It is not directly related to the tree, having the same name, used in \emph{binomial heaps}.}
+See Figure~\ref{fig:pascal-tri} for example.
+The sizes along the right spine of |ch 2 "abcde"|, that is, |10,6,3,1|, is the second diagonal (in orange), while the right spine of |ch 3 "abcde"| is the fourth diagonal (in blue).
 Applying |up| to a tree moves it rightwards and downwards.
 In a sense, a |B| tree represents a diagonal in Pascal's Triangle \emph{with a proof} of how it is constructed.
+
 
 \section{The Bottom-Up Algorithm}
 
@@ -833,7 +834,7 @@ td' n  = g . map' (td' (n-1)) . subs {-"~~."-}
 %endif
 The difference is that |td'| calls only |ex| in the base case.
 It takes only a routine induction to show that |td n = td' n . map' f|.
-All the calls to |f| is thus factored to the beginning of the algorithm.
+All the calls to |f| are thus factored to the beginning of the algorithm.
 We will then be focusing on transforming |td'|.
 
 Our aim is to show that |td' n| can be performed by |n| steps of |mapB g . up|, plus some pre and post processing.
@@ -934,7 +935,7 @@ derMain n =
 %format iters f = "{" f "}^{*}"
 
 
-The sublists problem was one of the examples of \cite{BirdHinze:03:Trouble}, in which they studied memoisation of functions, with a twist: the memo table is structured according to the call graph of the function, using trees of shared nodes (which they called \emph{nexuses}).
+The sublists problem was one of the examples of \cite{BirdHinze:03:Trouble}, a study of memoisation of functions, with a twist: the memo table is structured according to the call graph of the function, using trees of shared nodes (which they called \emph{nexuses}).
 To solve the sublists problem, \cite{BirdHinze:03:Trouble} introduced a data structure, also called a ``binomial tree''. Whereas the binomial tree in~\cite{Bird:08:Zippy} and in this pearl models the structure of the function |choose|, that in \cite{BirdHinze:03:Trouble} can be said to model the function computing \emph{all} sublists:
 \begin{code}
 sublists []      = [[]]
@@ -949,13 +950,13 @@ td xs = if sg xs then f (ex xs) else (g . mapF td . dc $ xs) {-"~~."-}
 \end{spec}
 %where |(p -> f; g)| denotes lifted conditional branching, defined by
 %|(p -> f; g) x = if p x then f x else g x|.
-In his setting, |L| is some input data structure that is often a list in examples, but needs not be so. The function |sg :: L a -> Bool| determines whether an |L| structure is a singleton, whose content can be extracted by |ex :: L a -> a|.
+In his setting, |L| is some input data structure that is often a list in examples, but need not be so. The function |sg :: L a -> Bool| determines whether an |L| structure is a singleton, whose content can be extracted by |ex :: L a -> a|.
 The function |dc :: L a -> F (L a)| decomposes an |L| into an |F| structure of |L|s, to be recursively processed.
 In the simplest example, |L| is the type of lists, |F a = (a,a)|, and |dc xs = (init xs, tail xs)| (e.g. |dc "abcd" = ("abc", "bcd")|).
 
 %One of the aims of~\cite{Bird:08:Zippy} was to study tabulation in bottom-up algorithms, therefore Bird introduced another data structure, the \emph{nexus} (which was not needed in the sublists example, however).
 A simplified version of Bird's generic bottom-up algorithm, without the nexus, is something like: |bu = ex . iters (map' g . cd) . map' f|.
-The pre and postprocessing are respectively |map' f| and |ex|, while |map' g . cd| is repeatedly performed until we have a singleton.
+The pre and postprocessing are respectively |map' f| and |ex|, while |map' g . cd| is repeatedly performed (via the "|*|") until we have a singleton.
 The function |cd :: L a -> L (F a)| transforms one level to the next.
 Note that its return type is symmetric to that of |dc| (hence the name |cd|, probably). For the |dc| above, we let |cd| be the function that combines adjacent elements of a list into pairs, e.g., |cd "abcd" = [("a",b), ("b", "c"), ("c","d")]|.
 
@@ -963,7 +964,8 @@ Note that its return type is symmetric to that of |dc| (hence the name |cd|, pro
 %format mapF3 = "{" mapF "}^3"
 %format mapFn = "{" mapF "}^{n}"
 %format mapFn1 = "{" mapF "}^{n-1}"
-While diagrams such as Figure~\ref{fig:ch-lattice} may help one to see how a bottom-up algorithm works, to understand how a top-down algorithm is transformed to a bottom-up one, the author finds it more helpful thinking in terms of right-to-left function composition.
+While diagrams such as Figure~\ref{fig:ch-lattice} may help one to see how a bottom-up algorithm works, to understand how a top-down algorithm is transformed to a bottom-up one,
+it may be it more helpful to think in terms of right-to-left function composition.
 Bird's top-down algorithm, when expanded, has the form
 %{
 %format (emph (x)) = "\textcolor{orange}{" x "}"
@@ -976,7 +978,7 @@ Several crucial properties are needed to turn |td| into |bu|.
 Among them, Bird needed |mapF ex . dc = ex . cd| and |dc . cd = mapF cd . dc|.
 The first property turns the inner |emph (mapFn ex . mapFn1 dc)| into |mapFn1 (ex . cd)|, while the second swaps |cd| to the rightmost position.
 Function calls to |f| and |g| are shunted to the right by naturalty.
-That gives you \emph{one} |map' g . cd|.
+That yields \emph{one} |map' g . cd|.
 The process needs to be repeated to create more |map' g . cd|.
 Therefore Bird used two inductive proofs to show that |td = bu|.
 
@@ -1000,16 +1002,16 @@ Look at the expanded top-down algorithm again:
 (The above is \eqref{eq:td-expanded} with |(mapF, dc) := (mapB, subs)|.)
 Property \eqref{eq:up-spec-B} turns the \emph{outermost}
 |emph (mapB subs . subs)|, which is |mapB sub . ch (n-1)|, into |up . ch (n-2)|.
-That is, |up| is generated from the outside, before shunted leftwards using naturality.
+That is, |up| is generated from the outside, before being shunted leftwards using naturality.
 This fits the problem better: we do not need a |dc' :: B a -> L (B a)|,
 and we need only one inductive proof.
 
 %} %% emph
 
-The moral of this story is that, while many bottom-up algorithms look alike --- they all have the form |post . iters step . pre|, the reason why they work could be very different.
+The moral of this story is that while many bottom-up algorithms look alike --- they all have the form |post . iters step . pre|, the reason why they work could be very different.
 It is likely that there are more patterns yet to be discovered.
 
-\paragraph*{Acknowledgements}~ The author would like to thank Hsiang-Shang Ko and Jeremy Gibbons for much in-depth discussions throughout the development of this work, and Yu-Hsuan Wu and Chung-Yu Cheng for proof-reading drafts of this pearl.
+\paragraph*{Acknowledgements}~ The author would like to thank Hsiang-Shang Ko and Jeremy Gibbons for many in-depth discussions throughout the development of this work, Conor McBride for discussion at a WG 2.1 meeting, and Yu-Hsuan Wu and Chung-Yu Cheng for proof-reading drafts of this pearl.
 The examples of how the immediate sublists problem may be put to work was suggested by Meng-Tsung Tsai.
 
 %\paragraph*{Conflicts of interest}~ None.
