@@ -23,11 +23,11 @@ infixr 0 ===
 %include forall.fmt
 %include exists.fmt
 
-%include Formatting.fmt
+%include common/Formatting.fmt
 
 %%\email{scm@iis.sinica.edu.tw}
 
-\usepackage{doubleequals}
+\usepackage{common/doubleequals}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}{Lemma}
@@ -95,7 +95,7 @@ For this problem, one might want to build a lattice-like structure, like that in
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.5\textwidth]{td-call-tree.pdf}
+\includegraphics[width=0.5\textwidth]{pics/td-call-tree.pdf}
 \caption{Computing |h "abcd"| top-down. String constants are shown using monospace font but without quotes, to save space.}
 \label{fig:td-call-tree}
 \end{figure}
@@ -111,7 +111,7 @@ The resulting bottom-up algorithm is concise, elegant, but also cryptic --- all 
 
 \begin{figure}
 \centering
-\includegraphics[width=0.85\textwidth]{ch-lattice.pdf}
+\includegraphics[width=0.85\textwidth]{pics/ch-lattice.pdf}
 \caption{Computing |h "abcde"| bottom-up.}
 \label{fig:ch-lattice}
 \end{figure}
@@ -414,7 +414,7 @@ if |ch _ (x:xs) = N t u|, the subtree |t| contains all the tips with |x| chosen,
 \centering
 \begin{subfigure}[b]{0.25\textwidth}
   \centering
-  \includegraphics[width=0.6\textwidth]{ch-1-5.pdf}
+  \includegraphics[width=0.6\textwidth]{pics/ch-1-5.pdf}
   \caption{|ch 1 "abcde"|.}
   \label{fig:ch-1-5}
 \end{subfigure}
@@ -422,7 +422,7 @@ if |ch _ (x:xs) = N t u|, the subtree |t| contains all the tips with |x| chosen,
 \qquad
 \begin{subfigure}[b]{0.45\textwidth}
   \centering
-  \includegraphics[width=0.8\textwidth]{ch-3-5.pdf}
+  \includegraphics[width=0.8\textwidth]{pics/ch-3-5.pdf}
   \caption{|ch 3 "abcde"|.}
   \label{fig:ch-3-5}
 \end{subfigure}
@@ -664,7 +664,7 @@ Again, we defined |choose| this way merely to generate sublists in an intuitive 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.9\textwidth]{up-2-3-demo.pdf}
+\includegraphics[width=0.9\textwidth]{pics/up-2-3-demo.pdf}
 \caption{Applying |mapB g {-"\mathrel{\scalebox{0.6}{$\circ$}}"-} up| to |mapB h (ch 2 "abcde")|. We abbreviate |zipBW snoc| to |zip|.}
 \label{fig:up-2-3-demo}
 \end{figure}
@@ -776,7 +776,7 @@ The last clause receives inputs having type |B a (2+k) (2+n)|. Both |u| and |up 
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{pascal-tri.pdf}
+\includegraphics[width=0.8\textwidth]{pics/pascal-tri.pdf}
 \caption{Sizes of |B| alone the right spine correspond to diagonals in Pascal's Triangle.}
 \label{fig:pascal-tri}
 \end{figure}
@@ -1001,8 +1001,8 @@ The examples of how the immediate sublists problem may be put to work was sugges
 
 \paragraph*{Conflicts of interest}~ None.
 
-%\bibliographystyle{jfplike}
-%\bibliography{bib}
-\input{sublists.bbl}
+\bibliographystyle{common/jfplike}
+\bibliography{common/bib}
+%\input{sublists.bbl}
 
 \end{document}
