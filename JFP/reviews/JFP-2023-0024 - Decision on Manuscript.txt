@@ -1,0 +1,314 @@
+From: Journal of Functional Programming <onbehalfof@manuscriptcentral.com>
+Subject: JFP-2023-0024 - Decision on Manuscript
+Date: April 29, 2024 at 10:08:09 PM GMT+8
+To: scm@iis.sinica.edu.tw
+Cc: dreyer@mpi-sws.org, g.k.keller@uu.nl, jfp-ed@cambridge.org, jfp-editors-calculation@googlegroups.com, scm@iis.sinica.edu.tw
+Reply-To: jfp-editors-calculation@googlegroups.com
+
+Dear Dr Mu,
+
+Manuscript ID JFP-2023-0024 entitled "Bottom-Up Computation Using Trees of Sublists" which you submitted to the JFP Special Issue on Program Calculation, has been reviewed.  The comments of the reviewers are included at the bottom of this letter.
+
+Although this work may potentially be published in Journal of Functional Programming, the reviewers have suggested some revisions to your manuscript.  Therefore, I invite you to respond to the reviewers' comments and revise your manuscript.
+
+As suggested by reviewer 1, please consider using more descriptive and accessible identifiers where this is appropriate.  Reviewer 2 comments that it would be beneficial to explain what lessons can be learned that could be applied to other kinds of programs, and feels that the presentation needs to be improved to qualify as a
+pearl.  Reviewer 3 identifies a number of possible areas for improving the paper.  The author should also consider whether the revised version would be more suitable as a research paper than a functional pearl.
+
+To revise your manuscript, log into https://mc.manuscriptcentral.com/jfp_submit and enter your Author Center, where you will find your manuscript title listed under "Manuscripts with Decisions."  Under "Actions," click on "Create a Revision."  Your manuscript number has been appended to denote a revision.
+
+You will be unable to make your revisions on the originally submitted version of the manuscript.  Instead, please upload your revised manuscript through your Author Center.
+
+When submitting your revised manuscript, you will be able to respond to the comments made by the referees in the space provided.  You can use this space to document any changes you make to the original manuscript.  In order to expedite the processing of the revised manuscript, please be as specific as possible in your response to the reviewers.
+
+IMPORTANT:  Your original files are available to you when you upload your revised manuscript.  Please delete any redundant files before completing the submission.
+
+Please submit your revised manuscript by 12th July 2024.
+
+Once again, thank you for submitting your manuscript to the Journal of Functional Programming and we look forward to receiving your revision.
+
+Sincerely,
+
+Graham Hutton and Nicolas Wu
+Guest Editors, JFP Special Issue on Program Calculation
+jfp-editors-calculation@googlegroups.com
+
+
+Reviewers' Comments to Author:
+
+
+Referee: 1
+
+Comments to the Author
+
+This paper considers algorithms on a list where the overall result depends
+on the results of all subproblems on sublists of the list. Minimum edit
+distance and longest common subsequence are briefly identified (after a minor recasting) as examples of this family of algorithms, but the paper as a whole stays at that abstract level rather than exploring specific applications.
+That is not a criticism--this paper is already long for a pearl so including those applications would almost certainly make the paper too long for this category--but it does make the paper less friendly to a broader pearl audience.
+
+Another aspect that makes it less friendly to a broader pearl audience is the insistence (common in this subarea) on extremely short function names, which often deliberately coincide with types of the same name. I understand the
+desire to save space, but to a large extent, the short names do not accomplish
+that goal. Yes, they save horizontal space, but much of the code fits in less
+than half the width of the page. Using more verbose names would cause very few extra line breaks and so should not change the page count at all. As one
+example, using the name "mapL" for the map function on lists instead of simply "L" (which is already the name of the list type) would, I believe, make this more accessible to a wider audience.
+
+Having said all that, fans of the program-calcuation work of Richard Bird will feel right at home. The technical content is interesting, and I believe
+it to be correct (but I admit that I did not work through any kind of formal verification). I especially appreciated the diagrams, which succeed in fitting a lot of information into a small space while still be easy to follow.
+
+Line 143: The use of "k==length xs" in this recursive function surprised me a bit because of the potential for inefficiency. I recognize that efficiency
+of this function might not matter and, even if does, the append ++ on the following line may be even more inefficient. If desired, it would be easy
+to eliminate the "length xs" by giving choose two Nats, k and n.
+
+Minor edits:
+
+*  line 33: "such that" -> "so that"
+*  line 41: "Rationale..." -> "The rationale..."
+*  line 77: "minimum editing distance" -> "minimum edit distance"
+*  line 109: "Let td be...". It's obvious to you but it won't be obvious
+to everybody that td means "top down". (In comparison, when you define bu a little farther down the page, it is very clear that means
+"bottom up" because you've said "bottom up" earlier in that sentence.)
+*  line 118: You use the function "rep" to mean "repeat". I would suggest "rpt" or "repeat" instead, mostly because the name "rep" is often used to mean "representation". (See, for example, Bird's "Pearls of Functional
+Algorithm Design", page 129.)
+*  line 170: "...L subs. each step..." I think you mean "each" to be capitalized
+and start a new sentence. Or you might intend the period after L subs
+to be a semicolon?
+*  Figure 3. I could not find any reference to this figure in the text. Maybe
+that reference was omitted or accidentally removed?
+* line 253 (but widespread later). I understand what you intend the ":=" symbol
+to mean in the case analysis. But a wider audience might not understand.
+Could you say something like "is" or "has the form" instead?
+* line 314: "...from which can retrieve..." Missing word? Maybe "from
+which we can retrieve"?
+* line 443: Missing letter and words "...essential[l]y the same as [in the]
+simply-typed version"
+* line 620: "...up is generated from the outside, before shunted leftwards..."
+Perhaps "then shunted" or "before being shunted"?
+
+
+Referee: 2
+
+Comments to the Author
+
+Summary:
+
+This article tried to rephrase the Bird's bottom-up algorithm for enumerating all the sublists. The algorithm calculates, different from the standard approach, the sublists in a layered manner: the sublists of length n are obtained from those of length n-1. The correctness of the development is justified by equational reasoning. In addition, a connection to Pascal's triangle is revealed.
+
+Evaluation:
+
+This pearl reports a nontrivial case study of developing a nontrivial bottom-up program. As far as I can see, its technical content is correct, and the writing is generally polished. Nevertheless, it has the following two major weaknesses.
+
+First, the lesson from this development is unclear. We know a few other ways of enumerating all sublists. When we bear in mind the use of memoization, it would be much simpler to use arrays. The author argued in the last paragraph of the introduction that the study here has a connection to the minimum edit distance and longest common subsequence problems. However, in my opinion, formalizing the connection to these problems is not at all trivial, since the well-known algorithm is based on two-dimensional arrays (tables) and focuses more on consecutive subsequences.
+
+I know that a pearl is not required to present a useful result. Nevertheless, I believe even a pearl should present something that will be instructive for developing other programs. The current development appears to be specific to the current problem, and I could not see which kind of programs it can be applied.
+
+Second, although I appreciate the author's struggle with simplification, the presentation is still dense. The "author instructions" of JFP says  "Functional Pearls are short (typically 4-10 pages), well-rounded papers describing some clever programming idea." The current draft consists of 14 pages, which is already longer than usual. Moreover, the development is not easy to follow (I will enumerate some issues in the following "other comments" section). I suspect that only a few experts can read this article. I believe that a pearl paper must be enjoyable for wider audiences.
+
+Other comments
+
+The notations used in this paper may be less friendly to those who are unfamiliar with this kind of development.  I would suggest:
+- to use map_L and map_B rather than L and B,
+- avoid using the "point-free" style unless it is very useful (especially, the use of $ will be needlessly tricky for non-Haskellers)
+
+Sections 2, 3, and 5 are closely related. In particular, the argument of Section 5 is essentially
+td n = ex . (L g . upgrade)^n . L f,
+and Section 4 developed up s.t.
+upgrade = b2l . up . l2b,
+where b2l :: B a -> L a and l2b :: L a -> B a specify the correspondence between the list and binomial tree.
+(Note: As Section 4.3 shows, the lists and binomial trees are isomorphic because of the shape constraint of the binomial trees. Thus, upgrade is definable if we disregard efficiency.)
+With this connection in mind, I would recommend the author merge Sections 2 and 3. I prefer to put Section 5 earlier, or at least, recommend providing formal connections (as mentioned above) between upgrade and up as well as choose and ch. Otherwise, the reader can hardly see what is going on.
+
+p2, Fig. 2:
+Please write that the numbers on the left are the levels.
+
+p3, l125:
+The equation about bu is too loose. It only requires to be an n-steps loop (even worse, one can set step to be id...). I hope for a more detailed specification. This issue is related to the calculation in l.176--186, whose intended meaning is currently somewhat vague.
+
+p8, l334--342
+This reasoning might be the hardest. A more gentle explanation is hoped. For example, one may point out that (i) (subs . (x:)) duplicates the input, applies (L (x:) . subs) and id respectively, and then merges them by snoc, and (ii) this kind of computation can be simulated on the tree structure, by using zipBW, as (5) shows.
+
+It might be better to put Fig. 5 in the appendix. Otherwise, a little more discussion concerning it seems necessary. Currently, the Agda program is just introduced and nearly nothing more. For example, can't you observe something from the viewpoint of the Curry-Howard correspondence?
+
+Section 6 contains several problems.
+- It contains several undefined notations (such as * and n-fold applications of functors) and cryptic functions (such as cd and dc). Readers cannot follow the discussion unless keeping Bird's article at hand.
+- p13, l.595--596: "the author finds it more helpful thinking in terms of right-to-left function composition."
+ I could not find any explanation that supports this argument. Moreover,  I could not see what "right-to-left function composition" means here. I suspected that it is somewhat related to the explanation in l. 603--604 and l. 619--620 without reaching any concrete understanding.
+- p14, l622--624: "The moral of this story is that, [...]  the reason why they work could be very different."
+ I could not agree with this argument. Bird's formalism aims to be more general than the current development. It is not surprising that fitting a particular problem to formalism sometimes requires additional nontrivial reasoning. I cannot regard such an additional reasoning as evidence of their differences.
+
+
+Referee: 3
+
+Comments to the Author
+
+Mu sketches a proof of correctness of a bottom-up algorithm that he
+claims was previously presented by Bird. (I looked quickly at Bird's
+work, and while the function presented by Bird is perhaps provably
+equal to Mu's, given certain assumptions, they are not defined in
+exactly the same way. I did not verify all the claims about related
+work.)
+
+Mu starts with a top-down recursion scheme for which the result for a
+given list xs (of length at least 2) is based on the results for the
+immediate sublists of xs. Then a bottom-up variant of this recursion
+scheme is constructed.
+
+The motivation for studying this recursion scheme is unclear to me. Mu
+writes that a binary variant of this scheme can be used to compute
+minimum edit distances and longest common subsequences, and claims
+*without giving a reference* that "it is known in the algorithm
+community that, with clever encoding, [the problems of computing
+minimum edit distances and longest common subsequences] can be
+rephrased as problems defined on one list, whose solution depends on
+immediate sublists". Is this encoding cheap? In practice, would one
+not rather use a binary variant of the recursion scheme? I think it is
+fine to focus on the unary scheme in the paper, to avoid complicating
+things too much, but perhaps one could outline towards the end how a
+binary scheme could be defined.
+
+Mu also states that "Many problems in additive combinatorics (Tao and
+Vu, 2012) can also be cast into this form". No concrete examples are
+given, and it is unclear to me whether this is something one would
+like to do in practice.
+
+The top-down scheme recomputes intermediate results, and the purpose
+of the bottom-up algorithm is to avoid this. I would have liked to see
+an analysis of the time complexity of the final algorithm. Mu's code
+uses snoc for cons-lists, and he claims that he took this approach in
+order to "generate sublists in a order that is more comprehensible to
+the readers". I don't really care in what order the lists "ab", "ac"
+and "bc" are printed in the examples, and would have preferred a
+presentation without snoc.
+
+Mu mostly works with partial functions. Some examples:
+
+* td, bu :: Nat → L X → Y
+
+ Only intended to be used when the length of the second argument is
+ the first argument plus one.
+
+* ex :: L a → a
+ unT :: B a → a
+
+ Only intended to be applied to singleton lists/trees.
+
+* choose :: Nat → L a → L (L a)
+ ch :: Nat → L a → B (L a)
+
+ Only intended to be used when the length of the second argument is
+ greater than or equal to the first argument.
+
+* zipBW :: (a → b → c) → B a → B b → B c
+
+ Only defined for B-trees of the same shape.
+
+* up :: B a → B (L a)
+
+ Only intended to be used with inputs of certain shapes.
+
+However, for up Mu presents an alternative, *total* implementation in
+Agda. I would have preferred to see everything developed in that
+style, because then it is clear what the preconditions are, and it is
+clear that the preconditions are satisfied (assuming that the code is
+well-typed). Some problems with the current presentation:
+
+* Mu did not explain why the application of td n in the body of td is
+ OK. (Because subs returns lists of a given length.)
+
+* The equational reasoning chain at the end of page 4 is stated
+ between functions of type L X → L Y, but at the start of the chain
+ it was not clear to me that the functions were only supposed to be
+ applied to lists of length 2 or more. An alternative could be to use
+ a pointful presentation with a list xs of length at least 2.
+
+* One equation (7) is stated to hold for non-empty lists, but fails
+ for singleton lists:
+
+   subs [x]              =
+   [[]]                  ≠
+   ⊥                     =
+   unT ⊥                 =
+   unT (up (T []))       =
+   unT ∘ up ∘ ch 0 $ [x]
+
+* On line 511 it is stated that unT :: B a → a is natural, but
+ naturality does not hold for non-strict functions when the input is
+ a tree with more than one element:
+
+   f (unT (N t u))         =
+   f ⊥                     ≠
+   ⊥                       =
+   unT (N (B f t) (B f u)) =
+   unT (B f (N t u))
+
+ That is perhaps fine, because unT is only supposed to be applied to
+ singleton trees, but Mu did not explain why that was the case in the
+ given situation.
+
+* Lemma 1 should presumably be restricted to lists of length at least
+ 1 + n (when n > 0), but no such restriction was given in the text.
+
+The problems above could be fixed, but we still have the issue that
+there are lots of conditions to check to verify that the arguments in
+the paper work out. When reading a functional pearl I don't want to
+worry about things like that, especially when a machine could verify
+all the conditions.
+
+I wrote above that the proof of correctness is sketched. There are
+some problems with the proof as given:
+
+* Mu assumes naturality of up in the "proof" of up's correctness, but
+ he does not prove that up is natural. Perhaps Mu implicitly used
+ something like "all polymorphic functions are natural", but as noted
+ above that is not necessarily the case for partial functions.
+
+* Mu derives some equations for up, and use these equations to
+ implement up. However, these equations are overlapping: if two
+ equations in an implementation of a function overlap, then the
+ second equation does not necessarily hold for all inputs.
+
+Despite all the issues pointed out above I enjoyed reading about the
+derivation of the bottom-up algorithm. If the issues could be fixed,
+then the paper might become more pleasant to read, and thus qualify as
+a functional pearl. If Mu is interested in revising the paper, then I
+suggest that he focuses on the following things:
+
+* More precise types.
+* A mechanised proof (for instance in Agda).
+* Better motivation.
+* An analysis of time complexity.
+
+Detailed comments for the author:
+
+Spelling and grammar could be improved.
+
+The equation on line 151 does not hold if xs is empty.
+
+Line 172: Don't you also want upgrade to be natural?
+
+You could perhaps explain what "W" in the name zipBW stands for.
+
+I don't think you referred to Figure 3 in the body of the text.
+
+Line 288: Don't you also use functoriality?
+
+In several places you write sub instead of subs.
+
+What does naturality mean for zipBW?
+
+When you introduce the Agda definition of B you could state explicitly
+that the N constructor is impossible if the two indices are equal.
+
+The Agda implementation of up matches on a proof. I think you could
+instead use a lemma on the right-hand side, and then the first two
+arguments of up could be made erased (using "@0").
+
+Does the Agda implementation of up match the Haskell one? That is not
+immediately obvious to me, because in the Agda implementation you use
+different patterns.
+
+Line 453, "correspond to diagonals in Pascal's Triangle": Do you mean
+"prefixes of diagonals"?
+
+Line 615, "expanded top-down algorithm": The top-down algorithm does
+not use B.
+
+Please use DOI links in the list of references. 
