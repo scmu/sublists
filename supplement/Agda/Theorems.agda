@@ -29,27 +29,7 @@ lemma-ch-eq-Tn {a} (suc n) (s≤s p) (x ∷ y ∷ ys) with suc n ≟ suc n
 ... | yes refl   = refl
 ... | no 1+n≠1+n = ⊥-elim (1+n≠1+n refl)
 
-
-postulate
-  funext : ∀ {a b : Set} {f g : a → b} → (∀ x → f x ≡ g x) → f ≡ g
-  h3 : ∀ {n k} → suc k ≤ suc (suc (suc n)) → 1 ≤ k → ¬ k ≡ 1 → ¬ suc k ≡ suc (suc (suc n)) → ⊥ 
-
-h1 : ∀ {k n} → suc k ≤ n → n ≤ k → ⊥ 
-h1 = <⇒≱
-
-h2 : ∀ {k} → suc k ≤ 2 → 1 ≤ k → ¬ k ≡ 1 → ⊥ 
-h2 {suc zero} p q r = r refl
-h2 {2+ k} (s≤s (s≤s ())) q r
-
--- case 2
-ssn≠sssn : {n : ℕ} → suc (suc n) ≡ suc (suc (suc n)) → ⊥
-ssn≠sssn ()
-
-sn≠ssn : {n : ℕ} →  suc n ≡ suc (suc n) → ⊥
-sn≠ssn ()
-
-q≡sn≢n : ∀ {n}  (q : ¬ suc n ≡ suc (suc n)) → (sn≢n : ¬ suc n ≡ suc (suc n)) → q ≡ sn≢n
-q≡sn≢n = λ q sn≢n → funext (λ x → ⊥-elim (sn≢n x))
+-- Theorem 1
 
 thm1 : {k n : ℕ} {a : Set} → (p : 0 < k) → (q : k < n) 
      -- → (r1 : k ≤ n) -- → (r2 : suc k ≤ n) 
