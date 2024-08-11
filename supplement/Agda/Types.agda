@@ -54,3 +54,11 @@ mapB-compose f g (T0 x)  = refl
 mapB-compose f g (Tn x)  = refl
 mapB-compose f g (N t u) = Eq.cong₂ N ((mapB-compose f g t)) ((mapB-compose f g u))
 
+mapB-cong : ∀ {a b} (f g : a → b) 
+          → (∀ x → f x ≡ g x) 
+          → ∀ {n k} → (t : B a n k) → mapB f t ≡ mapB g t
+mapB-cong f g f≡g (T0 x) rewrite f≡g x = refl
+mapB-cong f g f≡g (Tn x) rewrite f≡g x = refl
+mapB-cong f g f≡g (N t u) 
+  rewrite mapB-cong f g f≡g t 
+  rewrite mapB-cong f g f≡g u = refl

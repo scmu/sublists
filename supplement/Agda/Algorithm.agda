@@ -44,9 +44,16 @@ subs : {k : ℕ} {a : Set} → Vec a (suc k) → Vec (Vec a k) (suc k)
 subs         (x ∷ [])         = [ [] ]
 subs {suc k} (x ∷ xs@(_ ∷ _)) = snoc (mapL (x ∷_) (subs xs)) xs 
 
+-- ch : {a : Set} {n : ℕ} → (k : ℕ) → k ≤ n → Vec a n → B (Vec a k) k n
+-- ch zero _ _ = T0 []
+-- ch {_} {suc n} (suc k) (s≤s k≤n) (x ∷ xs) with k ≟ n
+-- ... | yes refl = Tn (x ∷ xs)
+-- ... | no k≠n = N (mapB (x ∷_) (ch k k≤n xs)) 
+--                  (ch (suc k) (≤∧≢⇒< k≤n k≠n) xs) 
+
 ch : {a : Set} {n : ℕ} → (k : ℕ) → k ≤ n → Vec a n → B (Vec a k) k n
 ch zero _ _ = T0 []
-ch {_} {suc n} (suc k) (s≤s k≤n) (x ∷ xs) with k ≟ n
+ch {_} {suc n} (suc k) 1+k≤1+n (x ∷ xs) with k ≟ n
 ... | yes refl = Tn (x ∷ xs)
-... | no k≠n = N (mapB (x ∷_) (ch k k≤n xs)) 
-                 (ch (suc k) (≤∧≢⇒< k≤n k≠n) xs) 
+... | no k≠n = N (mapB (x ∷_) (ch k (s≤s⁻¹ 1+k≤1+n) xs)) 
+                  (ch (suc k) (≤∧≢⇒< (s≤s⁻¹ 1+k≤1+n) k≠n) xs) 

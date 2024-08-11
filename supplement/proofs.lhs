@@ -280,7 +280,7 @@ derUp31 x xs =
    ===   {- def. of |ch|, since |2 < length (x:xs)| -}
      mapB subs (ch 2 (x:xs))  {-"~~."-}
 \end{code}
-The step (*) holds because |ch 1 xs| is a singleton list, and for a singleton list |[z]|, we have |subs (x:[z]) = [[x],[z]]|.
+The step (*) holds because every tip in |ch 1 xs| is a singleton list, and for a singleton list |[z]|, we have |subs (x:[z]) = [[x],[z]]|.
 
 \paragraph*{\bf Case 3.2~~} |0 < k| (and |k < length xs - 1|).
 For this case we need the following auxiliary properties. Recall that
