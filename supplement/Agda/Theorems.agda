@@ -42,11 +42,11 @@ thm1 : {k n : ℕ} {a : Set} → (p : 0 < k) → (q : k < n)
      → up p q (ch k (<⇒≤ q) xs) ≡ mapB subs (ch (suc k) q xs) 
 thm1 {suc k} {.1} _ (s≤s ()) (x ∷ [])
 
-thm1 {suc zero} {.(2+ zero)} p q (x ∷ y ∷ []) = refl
+thm1 {suc zero} {.(2+ zero)} _ _ (x ∷ y ∷ []) = refl
 
-thm1 {2+ k} {.(2+ zero)} p (s≤s (s≤s ())) (x ∷ y ∷ [])
+thm1 {2+ k} {.(2+ zero)} _ (s≤s (s≤s ())) (x ∷ y ∷ [])
 
-thm1 {k} {2+ (suc n)} p 3+≤3+ (x ∷ xs) with k ≟ 2+ n
+thm1 {k} {2+ (suc n)} _ 3+≤3+ (x ∷ xs) with k ≟ 2+ n
 ... | yes refl with suc n ≟ 2+ n 
 ... | yes ()
 ... | no 1+≠2+ with 3+≤3+
@@ -67,15 +67,15 @@ thm1 {k} {2+ (suc n)} p 3+≤3+ (x ∷ xs) with k ≟ 2+ n
  rewrite ind
  = refl
 
-thm1 {suc zero} {2+ (suc n)} p q (x ∷ xs) | no 1≠2+n 
+thm1 {suc zero} {2+ (suc n)} _ 2≤3+ (x ∷ xs) | no 1≠2+n 
  with thm1 {1} (s≤s z≤n) (s≤s (s≤s z≤n)) xs 
 ... | ind with xs
 ... | y ∷ ys 
- rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ (<⇒≤ q)) (≡⇒≡ᵇ 0 (2+ n))) (s≤s z≤n) 
+ rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ (<⇒≤ 2≤3+)) (≡⇒≡ᵇ 0 (2+ n))) (s≤s z≤n) 
  rewrite ≤-irrelevant (s≤s (bounded (ch 1 (s≤s z≤n) ys))) (s≤s (s≤s z≤n)) 
  rewrite ind
- rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ q) 1≠2+n) (s≤s (s≤s z≤n))
- rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ (s≤s⁻¹ q)) (≡⇒≡ᵇ 0 (suc n))) (s≤s z≤n)
+ rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ 2≤3+) 1≠2+n) (s≤s (s≤s z≤n))
+ rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ (s≤s⁻¹ 2≤3+)) (≡⇒≡ᵇ 0 (suc n))) (s≤s z≤n)
  rewrite sym (mapB-compose subs (x ∷_) (ch 1 (s≤s z≤n) ys))
  rewrite mapB-cong (λ q₁ → (x ∷ []) ∷ q₁ ∷ []) (λ x₁ → subs (x ∷ x₁)) 
             subs-single (ch 1 (s≤s z≤n) ys)
