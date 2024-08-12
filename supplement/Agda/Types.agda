@@ -4,7 +4,6 @@ open import Data.Nat
 open import Data.Nat.Properties
 open import Data.Vec
 open import Data.Empty
-open import Function using (_∘_; id)
 open import Relation.Binary.PropositionalEquality as Eq using (refl; _≡_; cong; sym; subst)
 
 open import NatProperties 
@@ -46,19 +45,3 @@ zipBW f (Tn x)    (Tn y)    = Tn (f x y)
 zipBW f (N t1 u1) (N t2 u2) = N (zipBW f t1 t2) (zipBW f u1 u2)
 zipBW f (Tn x) (N t u) = ⊥-elim (invalidU u)
 zipBW f (N t u) (Tn x) = ⊥-elim (invalidU u)
-
-mapB-compose : ∀ {n k} {a : Set} {b : Set} {c : Set} 
-               (f : b → c) (g : a → b) (t : B a n k) →
-               mapB (f ∘ g) t ≡ mapB f (mapB g t)
-mapB-compose f g (T0 x)  = refl
-mapB-compose f g (Tn x)  = refl
-mapB-compose f g (N t u) = Eq.cong₂ N ((mapB-compose f g t)) ((mapB-compose f g u))
-
-mapB-cong : ∀ {a b} (f g : a → b) 
-          → (∀ x → f x ≡ g x) 
-          → ∀ {n k} → (t : B a n k) → mapB f t ≡ mapB g t
-mapB-cong f g f≡g (T0 x) rewrite f≡g x = refl
-mapB-cong f g f≡g (Tn x) rewrite f≡g x = refl
-mapB-cong f g f≡g (N t u) 
-  rewrite mapB-cong f g f≡g t 
-  rewrite mapB-cong f g f≡g u = refl
