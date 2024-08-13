@@ -7,6 +7,7 @@ open import Data.Nat.Properties
      using (0<1+n; n<1+n; <-irrefl; ≤-refl; ≤∧≢⇒<)
 open import Data.Vec
 open import Data.Empty
+open import Function using (_∘_; id)
 open import Relation.Binary.PropositionalEquality as Eq 
      using (refl; _≡_; cong; sym; subst)
 open Eq.≡-Reasoning
@@ -50,3 +51,30 @@ ch {_} {suc n} (suc k) 1+k≤1+n (x ∷ xs) with k ≟ n
 ... | yes refl = Tn (x ∷ xs)
 ... | no k≠n = N (mapB (x ∷_) (ch k (s≤s⁻¹ 1+k≤1+n) xs)) 
                   (ch (suc k) (≤∧≢⇒< (s≤s⁻¹ 1+k≤1+n) k≠n) xs) 
+
+-- The Top-Down Algorithm
+
+ex : {a : Set} → Vec a 1 → a 
+ex (x ∷ []) = x 
+
+postulate
+  X : Set 
+  Y : Set
+  f : X → Y
+  g : {n : ℕ} → Vec Y (suc n) → Y
+
+td : (n : ℕ) → (xs : Vec X (suc n)) → Y
+td zero    xs = f (ex xs)  
+td (suc n) xs = g (map (td n) (subs xs))
+
+td' : (n : ℕ) → Vec Y (suc n) → Y
+td' zero    xs = ex xs
+td' (suc n) xs = g (map (td' n) (subs xs))
+
+-- The Bottom-Up Algorithm
+
+
+repeat : {a : Set} → (n : ℕ) → (a → a) → a → a
+repeat zero    f = id
+repeat (suc n) f = repeat n f ∘ f
+ -- but we cannot use it directly..?
