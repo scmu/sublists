@@ -4,13 +4,12 @@ module Properties where
 open import Data.Empty
 open import Data.Nat
 open import Data.Nat.Properties 
-     using (0<1+n; n<1+n; <-irrefl; ≤-refl; ≤∧≢⇒<)
+     using (≤∧≢⇒<)
 open import Data.Vec
 open import Data.Product
 open import Function using (_∘_; id)
-open import Relation.Binary.PropositionalEquality as Eq 
-     using (refl; _≡_; _≢_; cong; sym; subst)
-open Eq.≡-Reasoning
+open import Relation.Binary.PropositionalEquality
+     using (refl; _≡_; _≢_; sym; cong₂)
 
 open import Agda.Builtin.Equality
 open import Relation.Nullary
@@ -25,7 +24,7 @@ mapB-compose : ∀ {n k} {a : Set} {b : Set} {c : Set}
                mapB (f ∘ g) t ≡ mapB f (mapB g t)
 mapB-compose f g (T0 x)  = refl
 mapB-compose f g (Tn x)  = refl
-mapB-compose f g (N t u) = Eq.cong₂ N ((mapB-compose f g t)) ((mapB-compose f g u))
+mapB-compose f g (N t u) = cong₂ N ((mapB-compose f g t)) ((mapB-compose f g u))
 
 mapB-cong : ∀ {a b} (f g : a → b) 
           → (∀ x → f x ≡ g x) 

@@ -5,14 +5,11 @@ open import Data.Nat.Base
 open import Data.Nat.Properties
 open import Data.Vec
 open import Data.Empty
-open import Agda.Builtin.Equality
 open import Relation.Nullary
 open import Function using (_∘_; id)
-open import Relation.Binary.PropositionalEquality as Eq using (refl; _≡_; _≢_; cong; sym; subst)
--- open Eq.≡-Reasoning using (begin_; _≡⟨_⟩_; step-≡; _∎)
-open Eq.≡-Reasoning
-open import Relation.Nullary.Reflects 
-open import Data.Bool.Properties using (T?)
+open import Relation.Binary.PropositionalEquality
+   using (refl; _≡_; _≢_; cong; sym)
+open import Agda.Builtin.Equality
 open import Agda.Builtin.Bool
 open import Agda.Builtin.Unit 
 open import Agda.Builtin.Sigma

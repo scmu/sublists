@@ -4,7 +4,8 @@ open import Data.Nat
 open import Data.Nat.Properties
 open import Data.Vec
 open import Data.Empty
-open import Relation.Binary.PropositionalEquality as Eq using (refl; _≡_; cong; sym; subst)
+open import Relation.Binary.PropositionalEquality 
+    using (refl; _≡_; sym)
 
 open import NatProperties 
 

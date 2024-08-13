@@ -9,8 +9,7 @@ open import Data.Vec
 open import Data.Empty
 open import Function using (_∘_; id)
 open import Relation.Binary.PropositionalEquality as Eq 
-     using (refl; _≡_; cong; sym; subst)
-open Eq.≡-Reasoning
+     using (refl; _≡_)
 
 open import Agda.Builtin.Equality
 open import Relation.Nullary
