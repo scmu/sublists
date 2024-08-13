@@ -19,8 +19,8 @@ bounded (Tn  x) = s≤s ≤-refl
 bounded (N t u) = s≤s (bounded t)
 
 snoc : {a : Set} → {n : ℕ} → Vec a n → a → Vec a (suc n)
-snoc [] x = [ x ]
-snoc {a} {suc k} (x ∷ xs) y rewrite cong suc (1+n≡n+1 {k}) = (x ∷ xs) ++ [ y ]
+snoc []       z = [ z ]
+snoc (x ∷ xs) z = x ∷ snoc xs z
 
 -- B a k n → k ≤ n
 invalidU : ∀ {a n} → B a (suc n) n → ⊥
