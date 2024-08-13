@@ -43,6 +43,7 @@ Comments to the Author
 This paper considers algorithms on a list where the overall result depends
 on the results of all subproblems on sublists of the list. Minimum edit
 distance and longest common subsequence are briefly identified (after a minor recasting) as examples of this family of algorithms, but the paper as a whole stays at that abstract level rather than exploring specific applications.
+
 That is not a criticism--this paper is already long for a pearl so including those applications would almost certainly make the paper too long for this category--but it does make the paper less friendly to a broader pearl audience.
 
 Another aspect that makes it less friendly to a broader pearl audience is the insistence (common in this subarea) on extremely short function names, which often deliberately coincide with types of the same name. I understand the
@@ -54,35 +55,75 @@ example, using the name "mapL" for the map function on lists instead of simply "
 Having said all that, fans of the program-calcuation work of Richard Bird will feel right at home. The technical content is interesting, and I believe
 it to be correct (but I admit that I did not work through any kind of formal verification). I especially appreciated the diagrams, which succeed in fitting a lot of information into a small space while still be easy to follow.
 
-Line 143: The use of "k==length xs" in this recursive function surprised me a bit because of the potential for inefficiency. I recognize that efficiency
-of this function might not matter and, even if does, the append ++ on the following line may be even more inefficient. If desired, it would be easy
-to eliminate the "length xs" by giving choose two Nats, k and n.
+Line 143: The use of "k==length xs" in this recursive
+function surprised me a bit because of the potential for
+inefficiency. I recognize that efficiency of this function
+might not matter and, even if does, the append ++ on the
+following line may be even more inefficient. If desired,
+it would be easy to eliminate the "length xs" by giving
+choose two Nats, k and n.
+
+> Indeed, the function `choose` is used in the specification,
+> and thus its efficiency does not matter. Instead we would wish
+> to keep it simple. The way I prefer to see it is that when
+> we need a more efficient implementation, we introduce a
+> generalization `choose'`:
+>
+>    choose' :: Nat -> L a -> Nat -> L a
+>
+> whose specification is:
+>
+>    choose k xs = choose' k xs (length xs)
+>
+> The function `choose'` coincides with `choose` when its last
+> argument is length of the list. The generalized function has
+> a more efficient implementation, but to prove properties
+> about "choosing", we still go back to `choose`.
 
 Minor edits:
 
 *  line 33: "such that" -> "so that"
+> Fixed.
+
 *  line 41: "Rationale..." -> "The rationale..."
+> Fixed.
+
 *  line 77: "minimum editing distance" -> "minimum edit distance"
+> Fixed.
+
 *  line 109: "Let td be...". It's obvious to you but it won't be obvious
 to everybody that td means "top down". (In comparison, when you define bu a little farther down the page, it is very clear that means
 "bottom up" because you've said "bottom up" earlier in that sentence.)
-*  line 118: You use the function "rep" to mean "repeat". I would suggest "rpt" or "repeat" instead, mostly because the name "rep" is often used to mean "representation". (See, for example, Bird's "Pearls of Functional
-Algorithm Design", page 129.)
+> Added "(referring to ``top-down'')".
+
+*  line 118: You use the function "rep" to mean "repeat". I would suggest "rpt" or "repeat" instead, mostly because the name "rep" is often used to mean "representation". (See, for example, Bird's "Pearls of Functional Algorithm Design", page 129.)
+> Indeed. Used `repeat` instead.
+
 *  line 170: "...L subs. each step..." I think you mean "each" to be capitalized
 and start a new sentence. Or you might intend the period after L subs
 to be a semicolon?
+> I intended to start a new sentence. Fixed.
+
 *  Figure 3. I could not find any reference to this figure in the text. Maybe
 that reference was omitted or accidentally removed?
+> ???
+
 * line 253 (but widespread later). I understand what you intend the ":=" symbol
 to mean in the case analysis. But a wider audience might not understand.
 Could you say something like "is" or "has the form" instead?
+> ???
+
 * line 314: "...from which can retrieve..." Missing word? Maybe "from
 which we can retrieve"?
+> Fixed -- added "we".
+
 * line 443: Missing letter and words "...essential[l]y the same as [in the]
 simply-typed version"
+> Fixed.
+
 * line 620: "...up is generated from the outside, before shunted leftwards..."
 Perhaps "then shunted" or "before being shunted"?
-
+> Changed to "being shunted".
 
 Referee: 2
 
@@ -108,6 +149,8 @@ The notations used in this paper may be less friendly to those who are unfamilia
 - to use map_L and map_B rather than L and B,
 - avoid using the "point-free" style unless it is very useful (especially, the use of $ will be needlessly tricky for non-Haskellers)
 
+> I have changed all L and B to map and mapB, removed all uses of ($), and limited the use of point-free style.
+
 Sections 2, 3, and 5 are closely related. In particular, the argument of Section 5 is essentially
 td n = ex . (L g . upgrade)^n . L f,
 and Section 4 developed up s.t.
@@ -115,17 +158,29 @@ upgrade = b2l . up . l2b,
 where b2l :: B a -> L a and l2b :: L a -> B a specify the correspondence between the list and binomial tree.
 (Note: As Section 4.3 shows, the lists and binomial trees are isomorphic because of the shape constraint of the binomial trees. Thus, upgrade is definable if we disregard efficiency.)
 With this connection in mind, I would recommend the author merge Sections 2 and 3. I prefer to put Section 5 earlier, or at least, recommend providing formal connections (as mentioned above) between upgrade and up as well as choose and ch. Otherwise, the reader can hardly see what is going on.
+> ???
 
 p2, Fig. 2:
 Please write that the numbers on the left are the levels.
+> Done so in the caption.
 
 p3, l125:
 The equation about bu is too loose. It only requires to be an n-steps loop (even worse, one can set step to be id...). I hope for a more detailed specification. This issue is related to the calculation in l.176--186, whose intended meaning is currently somewhat vague.
 
+> This is merely a sketch of what we wish the form of the
+> resulting algorithm will be. The intention is given in
+> the text: "|pre| preprocesses the input and builds the
+> lowest level in Figure 2, and each |step| builds a level
+> from the one below."
+
 p8, l334--342
 This reasoning might be the hardest. A more gentle explanation is hoped. For example, one may point out that (i) (subs . (x:)) duplicates the input, applies (L (x:) . subs) and id respectively, and then merges them by snoc, and (ii) this kind of computation can be simulated on the tree structure, by using zipBW, as (5) shows.
 
+> ???
+
 It might be better to put Fig. 5 in the appendix. Otherwise, a little more discussion concerning it seems necessary. Currently, the Agda program is just introduced and nearly nothing more. For example, can't you observe something from the viewpoint of the Curry-Howard correspondence?
+
+> ???
 
 Section 6 contains several problems.
 - It contains several undefined notations (such as * and n-fold applications of functors) and cryptic functions (such as cd and dc). Readers cannot follow the discussion unless keeping Bird's article at hand.
@@ -213,11 +268,15 @@ well-typed). Some problems with the current presentation:
 * Mu did not explain why the application of td n in the body of td is
  OK. (Because subs returns lists of a given length.)
 
+> Added "The call |td n| in the body of |td (1+n)| is defined because |subs|, given an input of length |1+n|, returns lists of length |n|."
+
 * The equational reasoning chain at the end of page 4 is stated
  between functions of type L X → L Y, but at the start of the chain
  it was not clear to me that the functions were only supposed to be
  applied to lists of length 2 or more. An alternative could be to use
  a pointful presentation with a list xs of length at least 2.
+
+> Rewrote that paragraph, making it clear that xs is of length at least 2.
 
 * One equation (7) is stated to hold for non-empty lists, but fails
  for singleton lists:
@@ -228,6 +287,9 @@ well-typed). Some problems with the current presentation:
    unT ⊥                 =
    unT (up (T []))       =
    unT ∘ up ∘ ch 0 $ [x]
+
+> Indeed, (7) holds only for lists of length at least 2.
+> Thank you for spotting the error.
 
 * On line 511 it is stated that unT :: B a → a is natural, but
  naturality does not hold for non-strict functions when the input is
@@ -243,8 +305,17 @@ well-typed). Some problems with the current presentation:
  singleton trees, but Mu did not explain why that was the case in the
  given situation.
 
+> The calculation now has an argument xs, and it is stated that xs
+> is of length at least 2. Hope that makes it clearer.
+> That unT is always applied to a singleton tree is actually from (7).
+> It was stated after (7) that "That |up| always returns a |T| can be
+> seen from the annotated types discussed in Section 4.3..."
+
 * Lemma 1 should presumably be restricted to lists of length at least
  1 + n (when n > 0), but no such restriction was given in the text.
+
+> Thank you for pointing it out.
+> Explicitly stated the restriction in the lemma.
 
 The problems above could be fixed, but we still have the issue that
 there are lots of conditions to check to verify that the arguments in
@@ -260,10 +331,15 @@ some problems with the proof as given:
  something like "all polymorphic functions are natural", but as noted
  above that is not necessarily the case for partial functions.
 
+> We have constructed a Agda proof of the theorems in this paper.
+> The "naturality" properties are proved for zipBW, unTn, and up.
+
 * Mu derives some equations for up, and use these equations to
  implement up. However, these equations are overlapping: if two
  equations in an implementation of a function overlap, then the
  second equation does not necessarily hold for all inputs.
+
+> I hope this issue can be resolved now that we have the Agda proof.
 
 Despite all the issues pointed out above I enjoyed reading about the
 derivation of the bottom-up algorithm. If the issues could be fixed,
@@ -282,33 +358,69 @@ Spelling and grammar could be improved.
 
 The equation on line 151 does not hold if xs is empty.
 
+> Added "for non-empty xs".
+
 Line 172: Don't you also want upgrade to be natural?
+
+> We do --- it was written several lines above that
+> "it is a natural transformation".
 
 You could perhaps explain what "W" in the name zipBW stands for.
 
+> Explanation added.
+
 I don't think you referred to Figure 3 in the body of the text.
+
+> Added a reference in a nearby paragraph.
 
 Line 288: Don't you also use functoriality?
 
+> Yes. Added.
+
 In several places you write sub instead of subs.
+
+> Thank you. I corrected 6 such occurrences. I hope those are all!
 
 What does naturality mean for zipBW?
 
+> That for all trees t, u and functions h, r, f, g, h having the
+> right types, we have
+>   mapB h (zipBW r t u) = zipBW f (mapB g t) (mapB h u)
+> provided that
+>   h (r x y) = f (g x) (h y)
+> for all x, y.
+> You get property (5) by letting t = u, r x y = (x,y), and
+> h (x,y) = f (g x) (h y).
+
 When you introduce the Agda definition of B you could state explicitly
 that the N constructor is impossible if the two indices are equal.
+
+> That is indeed an important property that is not explicitly given.
+> Added some explanation after the introduction of |unTn|.
 
 The Agda implementation of up matches on a proof. I think you could
 instead use a lemma on the right-hand side, and then the first two
 arguments of up could be made erased (using "@0").
 
+> ???
+
 Does the Agda implementation of up match the Haskell one? That is not
 immediately obvious to me, because in the Agda implementation you use
 different patterns.
 
+> Yes it does..! The last four cases do have the same patterns
+> as those in the Haskell implementation.
+
 Line 453, "correspond to diagonals in Pascal's Triangle": Do you mean
 "prefixes of diagonals"?
+
+> Yes! Fixed.
 
 Line 615, "expanded top-down algorithm": The top-down algorithm does
 not use B.
 
-Please use DOI links in the list of references. 
+> ???
+
+Please use DOI links in the list of references.
+
+> ???
