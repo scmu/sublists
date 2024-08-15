@@ -741,11 +741,13 @@ The function |unTn : B a (suc n) (suc n) -> a| extracts the contents stored in a
 %{
 \newcommand{\dash}{{\text{-}}}
 %format sses = "\scaleobj{0.8}{\mathsf{s{\leq}s}}"
+%format ssesi = "\scaleobj{0.8}{\mathsf{s{\leq}s}^{-1}}"
 %format zsen = "\scaleobj{0.8}{\mathsf{z{\leq}n}}"
 %format zsz = "\scaleobj{0.8}{0{\small <}0}"
 %format snssn = "\scaleobj{0.8}{1{+}n\!<\!1{+}n}"
 %format ssnsssn = "\scaleobj{0.8}{2{+}n\!<\!2{+}n}"
 %format skssn = "\scaleobj{0.8}{1{+}k\!<\!1{+}n}"
+%format ssksssn = "\scaleobj{0.8}{2{+}k\!<\!2{+}n}"
 %format botelim = "{\bot}\dash\Varid{elim}"
 %format serefl = "\scaleobj{0.8}{{\leq}\dash\Varid{refl}}"
 %format sirrefl = "\scaleobj{0.8}{{<}\dash\Varid{irrefl}}"
@@ -753,15 +755,16 @@ The function |unTn : B a (suc n) (suc n) -> a| extracts the contents stored in a
 {\small
 \begin{spec}
 up : pf (0 < k) -> pf (k < n) -> B a k n -> B (Vec a (suc k)) (suc k) n
-up (pf zsz)    _             (T0 x)        = pf botelim (pf (sirrefl refl zsz))
-up _           (pf snssn)    (Tn x)        = pf botelim (pf (sirrefl refl snssn))
-up _           (pf ssnsssn)  (N (Tn _) _)  = pf botelim (pf (sirrefl refl ssnsssn))
+up (pf zsz)    _    (T0 x)        = pf botelim (pf (sirrefl refl zsz))
+up _  (pf snssn)    (Tn x)        = pf botelim (pf (sirrefl refl snssn))
+up _  (pf ssnsssn)  (N (Tn _) _)  = pf botelim (pf (sirrefl refl ssnsssn))
 
-up _  _  (N (T0 p)     (Tn q)      )  = Tn (p :: q :: [])
-up _  _  (N t@(N _ _)  (Tn q)      )  = Tn (snoc (unTn (up (pf (sses zsen)) (pf (sses serefl)) t)) q)
-up _  _  (N (T0 p)     u@(N _ u')  )  = N  (mapB (\ q -> p :: q :: []) u) (up (pf serefl) (pf (sses (bounded u'))) u)
-up _ (pf (sses skssn)) (N t@(N _ _) u@(N _ u')) =
-     N  (zipBW snoc (up (pf (sses zsen)) (pf skssn) t) u) (up (pf (sses zsen)) (pf (sses (bounded u'))) u)
+up _  _            (N (T0 p)     (Tn q)      )  = Tn (p :: q :: [])
+up _  _            (N t@(N _ _)  (Tn q)      )  = Tn (snoc (unTn (up (pf (sses zsen)) (pf (sses serefl)) t)) q)
+up _  _            (N (T0 p)     u@(N _ u')  )  = N  (mapB (\ q -> p :: q :: []) u)
+                                                     (up (pf serefl) (pf (sses (bounded u'))) u)
+up _ (pf ssksssn)  (N t@(N _ _) u@(N _ u'))     = N  (zipBW snoc (up (pf (sses zsen)) (pf (ssesi ssksssn)) t) u)
+                                                     (up (pf (sses zsen)) (pf (sses (bounded u'))) u)
 \end{spec}
 }
 %}
