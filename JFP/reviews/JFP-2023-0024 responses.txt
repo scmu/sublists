@@ -52,6 +52,8 @@ that goal. Yes, they save horizontal space, but much of the code fits in less
 than half the width of the page. Using more verbose names would cause very few extra line breaks and so should not change the page count at all. As one
 example, using the name "mapL" for the map function on lists instead of simply "L" (which is already the name of the list type) would, I believe, make this more accessible to a wider audience.
 
+> Used `map` and `mapB` instead of `L` and `B`.
+
 Having said all that, fans of the program-calcuation work of Richard Bird will feel right at home. The technical content is interesting, and I believe
 it to be correct (but I admit that I did not work through any kind of formal verification). I especially appreciated the diagrams, which succeed in fitting a lot of information into a small space while still be easy to follow.
 
@@ -83,17 +85,21 @@ choose two Nats, k and n.
 Minor edits:
 
 *  line 33: "such that" -> "so that"
+
 > Fixed.
 
 *  line 41: "Rationale..." -> "The rationale..."
+
 > Fixed.
 
 *  line 77: "minimum editing distance" -> "minimum edit distance"
+
 > Fixed.
 
 *  line 109: "Let td be...". It's obvious to you but it won't be obvious
 to everybody that td means "top down". (In comparison, when you define bu a little farther down the page, it is very clear that means
 "bottom up" because you've said "bottom up" earlier in that sentence.)
+
 > Added "(referring to ``top-down'')".
 
 *  line 118: You use the function "rep" to mean "repeat". I would suggest "rpt" or "repeat" instead, mostly because the name "rep" is often used to mean "representation". (See, for example, Bird's "Pearls of Functional Algorithm Design", page 129.)
@@ -102,27 +108,33 @@ to everybody that td means "top down". (In comparison, when you define bu a litt
 *  line 170: "...L subs. each step..." I think you mean "each" to be capitalized
 and start a new sentence. Or you might intend the period after L subs
 to be a semicolon?
+
 > I intended to start a new sentence. Fixed.
 
 *  Figure 3. I could not find any reference to this figure in the text. Maybe
 that reference was omitted or accidentally removed?
-> ???
+
+> Added a reference to Figure 3 in a nearby paragraph.
 
 * line 253 (but widespread later). I understand what you intend the ":=" symbol
 to mean in the case analysis. But a wider audience might not understand.
 Could you say something like "is" or "has the form" instead?
+
 > ???
 
 * line 314: "...from which can retrieve..." Missing word? Maybe "from
 which we can retrieve"?
+
 > Fixed -- added "we".
 
 * line 443: Missing letter and words "...essential[l]y the same as [in the]
 simply-typed version"
+
 > Fixed.
 
 * line 620: "...up is generated from the outside, before shunted leftwards..."
 Perhaps "then shunted" or "before being shunted"?
+
 > Changed to "being shunted".
 
 Referee: 2
@@ -149,7 +161,8 @@ The notations used in this paper may be less friendly to those who are unfamilia
 - to use map_L and map_B rather than L and B,
 - avoid using the "point-free" style unless it is very useful (especially, the use of $ will be needlessly tricky for non-Haskellers)
 
-> I have changed all L and B to map and mapB, removed all uses of ($), and limited the use of point-free style.
+> I have changed all L and B to map and mapB, removed all uses of ($),
+> and limited the use of point-free style.
 
 Sections 2, 3, and 5 are closely related. In particular, the argument of Section 5 is essentially
 td n = ex . (L g . upgrade)^n . L f,
@@ -158,6 +171,7 @@ upgrade = b2l . up . l2b,
 where b2l :: B a -> L a and l2b :: L a -> B a specify the correspondence between the list and binomial tree.
 (Note: As Section 4.3 shows, the lists and binomial trees are isomorphic because of the shape constraint of the binomial trees. Thus, upgrade is definable if we disregard efficiency.)
 With this connection in mind, I would recommend the author merge Sections 2 and 3. I prefer to put Section 5 earlier, or at least, recommend providing formal connections (as mentioned above) between upgrade and up as well as choose and ch. Otherwise, the reader can hardly see what is going on.
+
 > ???
 
 p2, Fig. 2:
@@ -402,13 +416,17 @@ The Agda implementation of up matches on a proof. I think you could
 instead use a lemma on the right-hand side, and then the first two
 arguments of up could be made erased (using "@0").
 
-> ???
+> I used s≤s⁻¹ in the RHS instead of pattern matching on the LHS.
+> However, once I declared the arguments 0 < k and k < n erased
+> by @0, Agda does not allow me to use them in ⊥-elim in the
+> first three clauses. For example, I cannot use `0<0` in
+> `⊥-elim (<-irrefl refl 0<0)`.
 
 Does the Agda implementation of up match the Haskell one? That is not
 immediately obvious to me, because in the Agda implementation you use
 different patterns.
 
-> Yes it does..! The last four cases do have the same patterns
+> Yes it does! The last four cases do have the same patterns
 > as those in the Haskell implementation.
 
 Line 453, "correspond to diagonals in Pascal's Triangle": Do you mean
