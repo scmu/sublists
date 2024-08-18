@@ -72,7 +72,7 @@ How the table can be represented and efficiently maintained, however, can be tri
 We study a special case: computing a function |h| taking lists as inputs such that |h xs| is defined in terms of all immediate sublists of |xs|.
 Richard Bird studied this problem in 2008, and presented a concise but cryptic algorithm without much explanation.
 We give this algorithm a proper derivation, and discovered a key property that allows it to work.
-The algorithm builds trees that have certain shapes --- the sizes along the left spine is a diagonal in Pascal's triangle.
+The algorithm builds trees that have certain shapes --- the sizes along the left spine is a prefix of a diagonal in Pascal's triangle.
 The crucial function we derive transforms one diagonal to the next.
 \end{abstract}
 
@@ -100,14 +100,19 @@ For this problem, one might want to build a lattice-like structure, like that in
 \label{fig:td-call-tree}
 \end{figure}
 
-\cite{Bird:08:Zippy} presented an interesting study of the relationship between top-down and bottom-up algorithms.
+\cite{Bird:08:Zippy} presented a study of the relationship between top-down and bottom-up algorithms.
 It was shown that if an algorithm can be written in a specific top-down style,
 with ingredients that satisfy certain properties,
 there is an equivalent bottom-up algorithm that stores intermediate results in a table.
 The ``all immediate sublists'' instance was the last example of the paper.
-To satisfy the said properties, however, Bird had to introduce additional data structures and helper functions out of the blue.
-The rationale for designing these data structures and functions was not obvious, nor was it clear why the needed properties are met.
-The resulting bottom-up algorithm is concise, elegant, but also cryptic --- all the more reason to present a proper calculation it deserves.
+To tackle the problem, however, Bird had to introduce, out of the blue, a binary tree and a concise but cryptic four-line function.
+The tree appears to obey some shape constraints, but that was not explicitly stated.
+Regarding the four-line function, which lies at the core of the bottom-up algorithm,
+we know from its type that it turns a tree into a tree of lists,
+and that is probably all one can say with confidence.
+Not only is it hard to see what the function exactly does,
+it is even not easy to see why the function, involving use of partial operations such as zipping trees of the same shape, always succeeds.
+Given limited space, Bird did not offer much rationale or explanation, nor did he prove that the function satisfies the said properties that should be met by a bottom-up algorithm.
 
 \begin{figure}
 \centering
@@ -116,17 +121,34 @@ The resulting bottom-up algorithm is concise, elegant, but also cryptic --- all 
 \label{fig:ch-lattice}
 \end{figure}
 
-In this pearl we review this problem, present an alternative specification, and derive Bird's algorithm.
-It turns out that the key property we rely on is different from that in \cite{Bird:08:Zippy}.
-Driven by this property, our main derivation is much more straight-forward.
-This suggests that, while many bottom-up algorithms look alike, the reason why they work may be more diverse than we thought, and there are a lot more to be discovered regarding reasoning about their correctness.
+The author finds this algorithm fascinating, and struggled to understand it.
+As Bird might agree, a good way to understand an algorithm is to calculate it, thus this pearl came into being.
+In this pearl we review this problem,
+reveal a connection between ``|n| choose |k|'' and ``|n| choose |1+k|'' that was not explicit in \cite{Bird:08:Zippy},
+motivate the introduction of the tree,
+and finally construct a formal specification of the four-line function (which we call |up| in this pearl).
+Once we have a specification, |up| can be calculated --- not without some tricky eureka that made the calculation fun.
+It then turns out that there is a formula describing the role of |up| in the bottom-up algorithm that is different and simpler than that in \cite{Bird:08:Zippy}.
+%It turns out that the key property we rely on is different from that in \cite{Bird:08:Zippy}.
+%Driven by this property, our main derivation is much more straight-forward.
+%This suggests that, while many bottom-up algorithms look alike, the reason why they work may be more diverse than we thought, and there are a lot more to be discovered regarding reasoning about their correctness.
 
-Before we start, one might ask: are there actually such problems, whose solution of input |xs| depends only on solutions of immediate sublists of |xs|?
+One might ask: are there actually such problems, whose solution of input |xs| depends on solutions of immediate sublists of |xs|?
 It turns out that it is quite common.
 While problems such as \emph{minimum edit distance} or \emph{longest common subsequence} are defined on two lists,
 it is known in the algorithm community that, with clever encoding, they can be rephrased as problems defined on one list,
 whose solution depends on immediate sublists.
 Many problems in additive combinatorics \citep{TaoVu:12:Additive} can also be cast into this form.
+
+But those are just bonuses.
+The application of a puzzle is being solved, and
+a functional pearl is a story about solving a puzzle.
+One sees a problem, wonders whether there is an elegant way to solve it,
+finds the right specification,
+tries to calculate it,
+encounters some head-scratching moments and surprising twists alone the way,
+and eventually comes up with a concise and beautiful algorithm.
+One then writes about the journey to share the fun.
 
 %if False
 \begin{code}
