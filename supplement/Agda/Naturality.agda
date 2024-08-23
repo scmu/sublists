@@ -21,7 +21,7 @@ open import NatProperties
 
 snoc-natural : {a b : Set} {n : ℕ}
     → (f : a → b) (xs : Vec a n) (z : a)
-    → mapL f (snoc xs z) ≡ snoc (mapL f xs) (f z) 
+    → map f (snoc xs z) ≡ snoc (map f xs) (f z) 
 snoc-natural f [] z = refl
 snoc-natural f (x ∷ xs) z rewrite snoc-natural f xs z = refl
 
@@ -50,7 +50,7 @@ up-natural : {a b : Set}  {n k : ℕ}
    → (f : a → b)
    → (0<k : 0 < k) → (k<n : k < n)
    → (t : B a k n) 
-   → up 0<k k<n (mapB f t) ≡ mapB (mapL f) (up 0<k k<n t)
+   → up 0<k k<n (mapB f t) ≡ mapB (map f) (up 0<k k<n t)
 
 up-natural f _ 1+n<1+n (Tn _) = ⊥-elim (<-irrefl refl 1+n<1+n)
 
@@ -61,7 +61,7 @@ up-natural f p q (N t u) with t in eqt
 ...   | Tn _ = refl
 ...   | N u₀ u₁ 
   rewrite sym (mapB-compose (λ q₁ → f x ∷ q₁ ∷ []) f (N u₀ u₁))
-        | sym (mapB-compose (mapL f) (λ q₁ → x ∷ q₁ ∷ []) (N u₀ u₁))
+        | sym (mapB-compose (map f) (λ q₁ → x ∷ q₁ ∷ []) (N u₀ u₁))
         | ≤-irrelevant (s≤s (bounded (mapB f u₁))) (s≤s (bounded u₁))
   with up-natural f (s≤s z≤n) (s≤s (bounded u₁)) u
 ... | ind rewrite equ
@@ -75,7 +75,7 @@ up-natural f p q (N t u) | N t₀ t₁ with u in equ
  rewrite eqt
  rewrite ind
  rewrite snoc-natural f (unTn (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl))) (N t₀ t₁))) x
- rewrite unTn-natural (mapL f) (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl))) (N t₀ t₁))
+ rewrite unTn-natural (map f) (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl))) (N t₀ t₁))
     = refl
 
 up-natural f p q (N t u) | N t₀ t₁ | N u₀ u₁ 
@@ -83,7 +83,7 @@ up-natural f p q (N t u) | N t₀ t₁ | N u₀ u₁
 ... | indt  
   rewrite eqt 
   rewrite indt
-  rewrite zipBW-natural (mapL f) snoc snoc (mapL f) f (snoc-natural f) 
+  rewrite zipBW-natural (map f) snoc snoc (map f) f (snoc-natural f) 
             (up (s≤s z≤n) (s≤s⁻¹ q) (N t₀ t₁)) (N u₀ u₁)
   with up-natural f (s≤s z≤n) (s≤s (bounded (mapB f u₁))) u
 ... | indu 

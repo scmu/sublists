@@ -31,10 +31,6 @@ unTn : {a : Set} → {n : ℕ} → B a (suc n) (suc n) → a
 unTn (Tn x)  = x 
 unTn (N t u) = ⊥-elim (invalidU u)
 
-mapL : {a b : Set} → ∀ {k} → (a → b) → Vec a k → Vec b k
-mapL f []       = []
-mapL f (x ∷ xs) = (f x) ∷ (mapL f xs)
-
 mapB : {a b : Set} → {k n : ℕ} → (a → b) → B a k n → B b k n
 mapB f (T0  x) = T0 (f x)
 mapB f (Tn  x) = Tn (f x)

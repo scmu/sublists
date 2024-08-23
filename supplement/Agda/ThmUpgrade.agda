@@ -1,4 +1,4 @@
-module Theorems where
+module ThmUpgrade where
 
 open import Data.Nat
 open import Data.Nat.Base
@@ -36,7 +36,7 @@ subs-single (x ∷ []) = refl
 
 zip-snoc-subs : {a : Set} {m n k : ℕ} 
    → (z : a) (u : B (Vec a (suc m)) n k)
-   → zipBW snoc (mapB (mapL (z ∷_)) (mapB subs u)) u ≡
+   → zipBW snoc (mapB (map (z ∷_)) (mapB subs u)) u ≡
       mapB subs (mapB (z ∷_) u)
 zip-snoc-subs z (T0 (x ∷ xs)) = refl
 zip-snoc-subs z (Tn (x ∷ xs)) = refl

@@ -42,7 +42,7 @@ up _ 2+k<2+n (N t@(N _ _) u@(N _ u')) =
 
 subs : {k : ℕ} {a : Set} → Vec a (suc k) → Vec (Vec a k) (suc k)
 subs         (x ∷ [])         = [ [] ]
-subs {suc k} (x ∷ xs@(_ ∷ _)) = snoc (mapL (x ∷_) (subs xs)) xs 
+subs {suc k} (x ∷ xs@(_ ∷ _)) = snoc (map (x ∷_) (subs xs)) xs 
 
 ch : {a : Set} {n : ℕ} → (k : ℕ) → k ≤ n → Vec a n → B (Vec a k) k n
 ch zero _ _ = T0 []
