@@ -19,7 +19,6 @@ open import Agda.Builtin.Unit
 1+n≡n+1 {n = zero} = refl
 1+n≡n+1 {n = suc n} = cong suc 1+n≡n+1
 
--- 1+k < 1+n → 1+k ≠ n → k < n
-
--- lemma3 : {n k : ℕ} → (suc k ≤ suc n) → (¬ suc k ≡ suc n) → (suc k ≤ n)
--- lemma3 p q = ≤-pred (≤∧≢⇒< p q)
+1+m≤n⇒m≤n : ∀ {m n} → 1 + m ≤ n → m ≤ n
+1+m≤n⇒m≤n {zero} {n} _ = z≤n
+1+m≤n⇒m≤n {suc m} {.(suc _)} (s≤s 1+m≤n) = s≤s (1+m≤n⇒m≤n 1+m≤n)

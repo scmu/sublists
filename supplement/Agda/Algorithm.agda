@@ -4,7 +4,7 @@ module Algorithm where
 
 open import Data.Nat
 open import Data.Nat.Properties 
-     using (0<1+n; n<1+n; <-irrefl; ≤-refl; ≤∧≢⇒<)
+     -- using (0<1+n; n<1+n; <-irrefl; ≤-refl; ≤∧≢⇒<)
 open import Data.Vec
 open import Data.Empty
 open import Function using (_∘_; id)
@@ -72,8 +72,27 @@ td' (suc n) xs = g (map (td' n) (subs xs))
 
 -- The Bottom-Up Algorithm
 
-
 repeat : {a : Set} → (n : ℕ) → (a → a) → a → a
 repeat zero    f = id
 repeat (suc n) f = repeat n f ∘ f
- -- but we cannot use it directly..?
+
+ -- but we cannot use it directly.
+
+
+repeatUp : {m : ℕ} (n : ℕ) → 
+  n < m →  B Y 1 m → B Y (suc n) m
+repeatUp zero    _ t = t
+repeatUp (suc n) 1+n+k<m t = 
+  (mapB g ∘ up (s≤s z≤n) 1+n+k<m ∘ repeatUp n (1+m≤n⇒m≤n 1+n+k<m)) t
+
+{-  repeatUp could have a more general type:
+
+     repeatUp : {k m : ℕ} (n : ℕ) → 
+       n + k < m →  B Y (suc k) m → B Y (suc n + k) m
+
+    With this type, however, we'd run into lots of trouble
+    handing n and n + 0.
+-}
+
+bu : (n : ℕ) → (xs : Vec X (suc n)) → Y
+bu n xs = (unTn ∘ repeatUp n ≤-refl ∘ mapB ex ∘ ch 1 (s≤s z≤n) ∘ map f) xs
