@@ -129,9 +129,6 @@ motivate the introduction of the tree,
 and finally construct a formal specification of the four-line function (which we call |up| in this pearl).
 Once we have a specification, |up| can be calculated --- not without some tricky eureka that made the calculation fun.
 It then turns out that there is a formula describing the role of |up| in the bottom-up algorithm that is different and simpler than that in \cite{Bird:08:Zippy}.
-%It turns out that the key property we rely on is different from that in \cite{Bird:08:Zippy}.
-%Driven by this property, our main derivation is much more straight-forward.
-%This suggests that, while many bottom-up algorithms look alike, the reason why they work may be more diverse than we thought, and there are a lot more to be discovered regarding reasoning about their correctness.
 
 One might ask: are there actually such problems, whose solution of input |xs| depends on solutions of immediate sublists of |xs|?
 It turns out that it is well-known in the algorithm community that,
@@ -140,8 +137,7 @@ with clever encoding, they can be rephrased as problems defined on one list whos
 Many problems in additive combinatorics \citep{TaoVu:12:Additive} can also be cast into this form.
 
 But those are just bonuses.
-The application of a puzzle is being solved, and
-a functional pearl is a story about solving a puzzle.
+The application of a puzzle is being solved, and a functional pearl is a story about solving a puzzle.
 One sees a problem, wonders whether there is an elegant way to solve it,
 finds the right specification,
 tries to calculate it,
@@ -251,28 +247,6 @@ and each |step| builds a level from the one below.
 For input of length |1+n| we repeat |n| times and, by then, we can extract the singleton value by |post|.
 
 Our aim is to construct |pre|, |step|, and |post| such that |td = bu|.
-
-%\hspace{2cm}
-%\begin{minipage}{0.3\textwidth}
-%\begin{code}
-%wrap :: a -> List a
-%wrap x = [x] {-"~~,"-}
-%\end{code}
-%\end{minipage}
-%\begin{minipage}{0.4\textwidth}
-%\begin{spec}
-%apply :: Nat -> (a -> a) -> a -> a
-%apply 0      f = id
-%apply (1+k)  f = apply k f . f {-"~~."-}
-%\end{spec}
-%%if False
-%\begin{code}
-%apply :: Nat -> (a -> a) -> a -> a
-%apply 0 f = id
-%apply k f = apply (k-1) f . f {-"~~."-}
-%\end{code}
-%%endif
-%\end{minipage}\\
 
 \section{Building a New Level}
 \label{sec:build-level}
@@ -812,7 +786,7 @@ It always succeeds because a tree having type |B a (1+n) (1+n)| must be construc
 
 Dependent types help us rest assured that the ``partial'' functions we use are actually safe.
 The current notations, however, are designed for interactive theorem proving, not program derivation.
-The auther derives program on paper by equational reasoning in a more concise notation, and double-checks the details by theorem prover afterwards.
+The author derives program on paper by equational reasoning in a more concise notation, and double-checks the details by theorem prover afterwards.
 All the proofs in this pearl have been translated to Agda, available at ???.
 For the rest of the pearl we switch back to non-dependently typed equational reasoning.
 

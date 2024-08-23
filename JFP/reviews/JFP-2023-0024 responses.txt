@@ -176,6 +176,7 @@ With this connection in mind, I would recommend the author merge Sections 2 and 
 
 p2, Fig. 2:
 Please write that the numbers on the left are the levels.
+
 > Done so in the caption.
 
 p3, l125:
@@ -397,14 +398,12 @@ In several places you write sub instead of subs.
 
 What does naturality mean for zipBW?
 
-> That for all trees t, u and functions h, r, f, g, h having the
+> That for all trees t, u and functions h, f, k, g, r having the
 > right types, we have
->   mapB h (zipBW r t u) = zipBW f (mapB g t) (mapB h u)
+>   mapB h (zipBW f t u) = zipBW k (mapB g t) (mapB r u)
 > provided that
->   h (r x y) = f (g x) (h y)
+>   h (f x y) = k (g x) (r y)
 > for all x, y.
-> You get property (5) by letting t = u, r x y = (x,y), and
-> h (x,y) = f (g x) (h y).
 
 When you introduce the Agda definition of B you could state explicitly
 that the N constructor is impossible if the two indices are equal.
