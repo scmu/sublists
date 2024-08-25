@@ -139,7 +139,7 @@ Many problems in additive combinatorics \citep{TaoVu:12:Additive} can also be ca
 
 But those are just bonuses.
 The application of a puzzle is being solved, and a functional pearl is a story about solving a puzzle.
-One sees a problem, wonders whether there is an elegant way to solve it,
+One sees a problem, wonders whether there is an elegant solution,
 finds the right specification,
 tries to calculate it,
 encounters some head-scratching moments and surprising twists alone the way,
@@ -222,7 +222,7 @@ The call |td n| in the body of |td (1+n)| is defined because |subs|, given an in
 Given input |xs|, the value we aim to compute is |h xs = td (length xs - 1) xs|.
 This definition will be handy later.
 
-The function |rep k| composes a function with itself |k| times:
+The function |repeat k| composes a function with itself |k| times:
 \begin{spec}
 repeat :: Nat -> (a -> a) -> a -> a
 repeat 0      f = id
@@ -273,9 +273,8 @@ choose k  (x:xs)  =  map' (x:) (choose (k-1) xs) ++ choose k xs{-"~~."-}
 Its definition follows basic combinatorics: the only way to choose |0| elements from a list is |[]|; if |length xs = k|, the only way to choose |k| elements is |xs|. Otherwise, to choose |1+k| elements from |x:xs|, one can either keep |x| and choose |k| from |xs|, or choose |1+k| elements from |xs|.
 For example, |choose 3 "abcde"| yields
 |["abc","abd","abe","acd","ace","ade","bcd","bce","bde","cde"]|.
-
 Note that |choose k xs| is defined only when |k <= length xs|.
-Note also that, for non-empty inputs, |subs| is a special case of |choose| --- we have |subs xs = choose (length xs -1) xs| for non-empty |xs|, a property we will need later.
+% Note also that, for non-empty inputs, |subs| is a special case of |choose| --- we have |subs xs = choose (length xs -1) xs| for non-empty |xs|, a property we will need later.
 
 If the levels in Figure~\ref{fig:ch-lattice} were to be represented as lists,
 each level |k| is given by |map' h (choose k xs)|.
@@ -321,11 +320,11 @@ Formalising the observations above, we want |upgrade :: L a -> L (L a)| to satis
 \end{equation}
 Given \eqref{eq:up-spec-list}, we may let each step in the bottom-up algorithm be |map' g . upgrade|.
 
-Equation \eqref{eq:up-spec-list} is constructed by observation and generalization.
-We wish that \eqref{eq:up-spec-list} is the right specification for |upgrade|, from which a definition of |upgrade| can be calculated.
-That \eqref{eq:up-spec-list} (in fact, a modified version of it) does do its job in the bottom-up algorithm will be formally justified later.
-For now, we demonstrate below that, with \eqref{eq:up-spec-list} satisfied, |map' g . upgrade| builds level |k+1| from level |k|.
-Let the input be |xs|. If |xs| is a singleton list, we are done, so we consider |xs| having length at least |2|.
+Equation \eqref{eq:up-spec-list} is a specification of |upgrade|, constructed by observation and generalisation.
+We want it to serve two purposes: 1. we wish to calculate from it a definition of |upgrade|, and 2. it plays a central role in proving that the bottom-up algorithm, also to be constructed, equals the top-down algorithm.
+That \eqref{eq:up-spec-list} (in fact, a modified version of it) does meet the purposes above will be formally justified later.
+For now, we try to gain some intuition by demonstrating below that, with \eqref{eq:up-spec-list} satisfied, |map' g . upgrade| builds level |k+1| from level |k|.
+Let the input be |xs|. If |xs| is a singleton list, the bottom-up algorithm has finished, so we consider |xs| having length at least |2|.
 Recall that level |k| is |map' h (choose k xs)|. Applying |map' g . upgrade| to level |k|:
 %if False
 \begin{code}
@@ -347,7 +346,7 @@ derUpgradeHelp k xs =
 \end{code}
 We get level |1+k|.
 
-We give some explanation on the constraints on |k| in \eqref{eq:up-spec-list}.
+The constraints on |k| in \eqref{eq:up-spec-list} may need some explanation.
 For |choose (1+k) xs| on the RHS to be defined, we need |1+k <= length xs|.
 %
 Meanwhile, no |upgrade| could satisfy \eqref{eq:up-spec-list} when |k = 0|:
@@ -473,7 +472,7 @@ The case analysis follows the shape of |ch (1+k) xs| (on the RHS of \eqref{eq:up
 Therefore, there is a base case, a case when |xs| is non-empty and |1+k = length xs|, and a case when |1+k < length xs|.
 However, since the constraints demand that |xs| has at least two elements, the base case will be lists of length |2|, and in the inductive cases the length of the list will be at least |3|.
 
-\paragraph*{Case 1.~~} |xs := [y,z]|.\footnote{The |:=| notation denotes substitution. That is, the property being proved is \eqref{eq:up-spec-B} with |[y,z]| substituted for |xs|.}\\
+\paragraph*{Case 1.~~} |xs := [y,z]|.\footnote{The (|:=|) denotes substitution: we mean that the property being proved is \eqref{eq:up-spec-B} with |[y,z]| substituted for |xs|.}\\
 The constraints force |k| to be |1|.
 We simplify the RHS of \eqref{eq:up-spec-B}:
 %if False
@@ -628,7 +627,7 @@ it duplicates the argument |xs| and applies |map' (x:) . subs| to one of them, b
 \item Equivalently, we may also duplicate each values in u to pairs, before applying |\(xs,xs') -> snoc (map' (x:) (subs xs)) xs'| to each pair.
 \item Values in |u| can be duplicated by zipping |u| to itself, that is, |zipBW (\xs -> (xs,xs)) u u|.
 \end{itemize}
-Summarising the idea above, we calculate:
+With the idea above in mind, we calculate:
 \begin{spec}
      mapB (subs . (x:)) u
 ===    {- definition of |subs| -}
@@ -638,32 +637,17 @@ Summarising the idea above, we calculate:
 ===    {- |zipBW| natural -}
      zipBW snoc (mapB (map' (x:) . subs) u) u {-"~~."-}
 \end{spec}
-The naturality of |zipBW| in the last step is the property that
-\begin{spec}
-  mapB h (zipBW f t u) = zipBW k (mapB g t) (mapB r u) {-"~~,"-}
-\end{spec}
-provided that |h (f x y) = k (g x) (r y)|. We have shown that
+We have shown that
 \begin{equation}
 \label{eq:map-sub-zipBW}
   |mapB (subs . (x:)) u = zipBW snoc (mapB (map' (x:) . subs) u) u {-"~~,"-}|
 \end{equation}
 which brings |mapB subs| next to |u|.
-
-%Note that
-%\begin{itemize}
-%\item by definition, |subs (x:xs) = map' (x:) (subs xs) ++ [xs]|.
-%That is, |subs . (x:) = \xs -> snoc (map' (x:) (subs xs)) xs|.
-%\item Given a tree |u| and functions |f|, |g|, and |h|, by naturality of |zipBW| we have:
-%\begin{equation}
-%\label{eq:map-zipBW}
-% |mapB (\z -> f (g z) (h z)) u = zipBW f (mapB g u) (mapB h u) {-"~~."-}|
-%\end{equation}
-%\item Therefore, letting |g = map' (x:) . subs|, |h = id|, and |f = snoc| in \eqref{eq:map-zipBW}, where |snoc ys z = ys ++[z]|, we have:
-%\begin{equation}
-%\label{eq:map-sub-zipBW}
-%  |mapB (subs . (x:)) u = zipBW snoc (mapB (map' (x:) . subs) u) u {-"~~."-}|
-%\end{equation}
-%\end{itemize}
+The naturality of |zipBW| in the last step is the property that,
+provided that |h (f x y) = k (g x) (r y)|, we have:
+\begin{spec}
+  mapB h (zipBW f t u) = zipBW k (mapB g t) (mapB r u) {-"~~."-}
+\end{spec}
 
 Back to (\ref{eq:up3R}.1), we may then calculate:
 %if False
@@ -788,7 +772,8 @@ It always succeeds because a tree having type |B a (1+n) (1+n)| must be construc
 Dependent types help us rest assured that the ``partial'' functions we use are actually safe.
 The current notations, however, are designed for interactive theorem proving, not program derivation.
 The author derives program on paper by equational reasoning in a more concise notation, and double-checks the details by theorem prover afterwards.
-All the proofs in this pearl have been translated to Agda, available at ???.
+All the proofs in this pearl have been translated to Agda.%
+\footnote{Available at \url{https://github.com/scmu/sublists/tree/main/supplement/Agda}~.}
 For the rest of the pearl we switch back to non-dependently typed equational reasoning.
 
 %\begin{figure}
@@ -890,7 +875,7 @@ For all |n :: Nat| we have |td n = bu n|, where
 bu n = unT . rep' n (mapB g . up) . mapB ex . ch 1 . map' f {-"~~."-}
 \end{code}
 \end{theorem}
-\noindent That is, the top-down algorithm |td n| is equivalent to a bottom-up algorithm |bu n|, where the input is preprocessed by |mapB ex . ch 1 . map' f|, followed by |n| steps of |mapB g . up|. By then we will get a singleton tree, whose content can be extracted by |unT|.
+\noindent That is, the top-down algorithm |td n| is equivalent to a bottom-up algorithm |bu n|, where the input is preprocessed by |mapB ex . ch 1 . map' f|, followed by |n| steps of |mapB g . up|. By then we will have a singleton tree, whose content can be extracted by |unT|.
 \begin{proof}
 Let |length xs = 1 + n|. We reason:
 %if False
@@ -918,9 +903,9 @@ The real work is done in Lemma~\ref{lma:main} below. It shows that |mapB (td' n)
 This is the key lemma that relates \eqref{eq:up-spec-B} to the main algorithm.
 \begin{lemma}\label{lma:main}
 For inputs of length |1+n| (|n > 1|), we have
-\begin{equation}
+\begin{equation*}
 |mapB (td' n) . ch (1+n) = rep' n (mapB g . up) . mapB ex . ch 1| \mbox{~~.}
-\end{equation}
+\end{equation*}
 \end{lemma}
 \begin{proof}
 For |n := 0| both sides simplify to |mapB ex . ch 1|. For |n := 1 + n|, we start from the LHS, assuming an input of length |2+n|:
@@ -958,6 +943,7 @@ In typical program calculation, one starts with a specification of the form
 The author has tried to find such a specification with no avail, before settling down on \eqref{eq:up-spec-B}.
 Techniques for manipulating such specifications to find a solution for |up| is one of the lessons the author learned from this experience.
 
+Some final notes on the previous works.
 The sublists problem was one of the examples of \cite{BirdHinze:03:Trouble}, a study of memoisation of functions, with a twist: the memo table is structured according to the call graph of the function, using trees of shared nodes (which they called \emph{nexuses}).
 To solve the sublists problem, \cite{BirdHinze:03:Trouble} introduced a data structure, also called a ``binomial tree''. Whereas the binomial tree in~\cite{Bird:08:Zippy} and in this pearl models the structure of the function |choose|, that in \cite{BirdHinze:03:Trouble} can be said to model the function computing \emph{all} sublists:
 \begin{code}
@@ -1015,7 +1001,7 @@ In this pearl we took a shorter route, proving directly that the bottom-up algor
 % Several crucial properties are needed to turn |td| into |bu|.
 % Among them, Bird needed |mapF ex . dc = ex . cd| and |dc . cd = mapF cd . dc|.
 % The first property turns the inner |emph (mapFn ex . mapFn1 dc)| into |mapFn1 (ex . cd)|, while the second swaps |cd| to the rightmost position.
-% Function calls to |f| and |g| are shunted to the right by naturalty.
+% Function calls to |f| and |g| are shunted to the right by naturality.
 % That yields \emph{one} |map' g . cd|.
 % The process needs to be repeated to create more |map' g . cd|.
 % Therefore Bird used two inductive proofs to show that |td = bu|.
