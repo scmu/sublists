@@ -58,30 +58,12 @@ td'-repeatUp {suc n} 1+n<m 0<m xs
  rewrite ≤-irrelevant (1+m≤n⇒m≤n 1+n<m) (<⇒≤ 1+n<m)
  = refl
 
-subs-ch : {a : Set} {n : ℕ}
-        → (0<n : 0 < n)
-        → (xs : Vec a (suc n)) 
-        → subs xs ≡ (unTn ∘ up 0<n ≤-refl ∘ ch n (<⇒≤ ≤-refl)) xs 
-subs-ch 0<n xs 
- rewrite up-ch 0<n (s≤s (≤-reflexive refl)) xs 
- rewrite ch-all (s≤s (≤-reflexive refl)) xs
- = refl 
-
 td-bu : ∀ {n} → (xs : Vec X (suc n))
       → td n xs ≡ bu n xs
 td-bu {zero} (x ∷ []) = refl
 td-bu {suc n} xs 
- rewrite td-td' (suc n) xs
- rewrite subs-ch (s≤s z≤n) (map f xs)
- rewrite unTn-natural (g ∘ map (td' n)) 
-               (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl)))
-                   (ch (suc n) (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (map f xs)))
- rewrite mapB-compose g (map (td' n))
-               (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl)))
-                   (ch (suc n) (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (map f xs)))
- rewrite sym (up-natural (td' n) (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl))) 
-               (ch (suc n) (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (map f xs)))
- rewrite td'-repeatUp (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (s≤s z≤n) (map f xs)
- rewrite ≤-irrelevant (s≤s {n} (1+m≤n⇒m≤n (s≤s (≤-reflexive refl))))
-                      (s≤s (<⇒≤ (s≤s (≤-reflexive refl))))
+ rewrite td-td' (suc n) xs 
+ rewrite cong subs (sym (ch-all-id ≤-refl (map f xs)))
+ rewrite unTn-natural (td' (1 + n)) (ch (2 + n) ≤-refl (map f xs))
+ rewrite td'-repeatUp ≤-refl (s≤s z≤n) (map f xs)
  = refl
