@@ -409,7 +409,7 @@ Note that for |ch n xs| where |n = length xs| always results in |T xs|.
 That is, we have
 \begin{equation}
 \label{eq:ch-all}
-|unT (ch n xs) = xs| \mbox{~~, if~} |n = length xs| \mbox{.}
+|unT (ch n xs) = xs| \mbox{~~, where~} |n = length xs| \mbox{.}
 \end{equation}
 
 Our main theorem is that

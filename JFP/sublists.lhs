@@ -11,6 +11,7 @@
 
 %if False
 \begin{code}
+import Prelude hiding (repeat)
 (===) :: a -> a -> a
 (===) = undefined
 
@@ -873,43 +874,47 @@ td' n  = g . map' (td' (n-1)) . subs {-"~~."-}
 The difference is that |td'| calls only |ex| in the base case.
 It takes only a routine induction to show that |td n = td' n . map' f|.
 All the calls to |f| are thus factored to the beginning of the algorithm.
-We will then be focusing on transforming |td'|.
+We may then focus on transforming |td'|.
 
-Our aim is to show that |td' n| can be performed by |n| steps of |mapB g . up|, plus some pre and post processing.
-%
-Our derivation, however, has to introduce the last step (that is, the leftmost |mapB g . up|, when the steps are composed together) separately from the other steps.
-We mentioned that |subs| is a special case of |choose|. To be more precise, for |xs| and |n > 0| such that |length xs = 1+n|, we have
+Note that for |ch n xs| where |n = length xs| always results in |T xs|.
+That is, we have
 \begin{equation}
-\label{eq:unT-up-choose}
-|subs xs = (unT . up . ch n) xs {-"~~."-}|
+\label{eq:ch-all}
+|unT (ch n xs) = xs| \mbox{~~, where~} |n = length xs| \mbox{.}
 \end{equation}
-For an example of \eqref{eq:unT-up-choose}, let |xs = "abcd"|. The LHS gives us |["abc","abd","acd","bcd"]|, while
-in the RHS, |ch n| builds a tree with four tips, which will be joined by |up| to a singleton tree |T ["abc","abd","acd","bcd"]|.
-That |up| always returns a |T| can be seen from the annotated types discussed in Section \ref{sec:deptypes}: since |ch n| yields a tree having type |B a n (1+n)|, |up| has to construct a tree of type |B a (1+n) (1+n)|, which must be a tip.
 
-Now we calculate, for |xs| and |n > 0| such that |length xs = 1+n|,
+Our main theorem is that
+\begin{theorem} \label{thm:td-bu}
+For all |n :: Nat| we have |td n = bu n|, where
+\begin{code}
+bu n = unT . rep' n (mapB g . up) . mapB ex . ch 1 . map' f {-"~~."-}
+\end{code}
+\end{theorem}
+\noindent That is, the top-down algorithm |td n| is equivalent to a bottom-up algorithm |bu n|, where the input is preprocessed by |mapB ex . ch 1 . map' f|, followed by |n| steps of |mapB g . up|. By then we will get a singleton tree, whose content can be extracted by |unT|.
+\begin{proof}
+Let |length xs = 1 + n|. We reason:
 %if False
 \begin{code}
-derTd1 :: Nat -> L X -> Y
-derTd1 n xs =
+derMain :: Nat -> L X -> Y
+derMain n xs =
 \end{code}
 %endif
 \begin{code}
-     td (1+n) xs
- ===   {- since |td k = td' k . map' f| -}
-     (td' (1+n) . map' f) xs
- ===   {- def. of |td'| -}
-     (g . map' (td' n) . subs . map' f) xs
- ===   {- by \eqref{eq:unT-up-choose} -}
-     (g . map' (td' n) . unT . up . ch (1+n) . map' f) xs
+   td n xs
+ ===   {- since |td n = td' n . map' f| -}
+   (td' n . map' f) xs
+ ===   {- by \eqref{eq:ch-all} -}
+   (td' n . unT . ch (1+n) . map' f) xs
  ===   {- naturality of |unT| -}
-     (unT . mapB (g . map' (td' n)) . up . ch (1+n) . map' f) xs
- ===   {- naturality of |up| -}
-     (unT . mapB g . up . mapB (td' n) . ch (1+n) . map' f) xs {-"~~."-}
+   (unT . mapB (td' n) . ch (1+n) . map' f)  xs
+ ===    {- Lemma~\ref{lma:main} -}
+   (unT . rep' n (mapB g . up) . mapB ex . ch 1 . map' f) xs
+ ===    {- definition of |bu| -}
+   bu n xs {-"~~."-}
 \end{code}
-That gives us the last |mapB g . up|.
+\end{proof}
 
-For the other steps, the following lemma shows that |mapB (td' n) . ch (1+n)| can be performed by |n| steps of |mapB g . up|, after some preprocessing.
+The real work is done in Lemma~\ref{lma:main} below. It shows that |mapB (td' n) . ch (1+n)| can be performed by processing the input by |mapB ex . ch 1|, before |n| steps of |mapB g . up|.
 This is the key lemma that relates \eqref{eq:up-spec-B} to the main algorithm.
 \begin{lemma}\label{lma:main}
 For inputs of length |1+n| (|n > 1|), we have
@@ -918,7 +923,7 @@ For inputs of length |1+n| (|n > 1|), we have
 \end{equation}
 \end{lemma}
 \begin{proof}
-For |n := 0| both sides simplify to |mapB ex . ch 1|. For |n := 1 + n|, we start from the LHS, assuming inputs of length |2+n|:
+For |n := 0| both sides simplify to |mapB ex . ch 1|. For |n := 1 + n|, we start from the LHS, assuming an input of length |2+n|:
 %if False
 \begin{code}
 derLma :: Nat -> L Y -> B Y
@@ -937,36 +942,6 @@ derLma n =
      mapB g . up . rep' n (mapB g . up) . mapB ex . ch 1
  ===    {- |(.)| associative, def. of |rep' n f| -}
      rep' (1+n) (mapB g . up) . mapB ex . ch 1 {-"~~."-}
-\end{code}
-\end{proof}
-
-In summary, we have shown that:
-\begin{theorem} For all |n :: Nat| we have |td n = bu n|, where
-\begin{code}
-bu n = unT . rep' n (mapB g . up) . mapB ex . ch 1 . map' f {-"~~."-}
-\end{code}
-\end{theorem}
-\noindent That is, the top-down algorithm |td n| is equivalent to a bottom-up algorithm |bu n|, where the input is preprocessed by |mapB ex . ch 1 . map' f|, followed by |n| steps of |mapB g . up|. By then we will get a singleton tree, whose content can be extracted by |unT|.
-The proof is merely putting all the pieces together.
-\begin{proof}
-For |n := 0|, both sides reduce to |f . ex|.
-For |n := 1+n|, we have
-%if False
-\begin{code}
-derMain :: Nat -> L X -> Y
-derMain n =
-\end{code}
-%endif
-\begin{code}
-   td (1+n)
- ===    {- calculation before -}
-   unT . mapB g . up . mapB (td' n) . ch (1+n) . map' f
- ===    {- Lemma~\ref{lma:main} -}
-   unT . mapB g . up . rep' n (mapB g . up) . mapB ex . ch 1 . map' f
- ===    {- |(.)| associative, def. of |rep' n f| -}
-   unT . rep' (1+n) (mapB g . up) . mapB ex . ch 1 . map' f
- ===    {- definition of |bu| -}
-   bu (1+n) {-"~~."-}
 \end{code}
 \end{proof}
 
