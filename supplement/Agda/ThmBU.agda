@@ -62,9 +62,10 @@ subs-ch : {a : Set} {n : ℕ}
         → (0<n : 0 < n)
         → (xs : Vec a (suc n)) 
         → subs xs ≡ (unTn ∘ up 0<n ≤-refl ∘ ch n (<⇒≤ ≤-refl)) xs 
-subs-ch 0<n xs = {!   !} 
-
- -- td : (n : ℕ) → (xs : Vec X (suc n)) → Y
+subs-ch 0<n xs 
+ rewrite up-ch 0<n (s≤s (≤-reflexive refl)) xs 
+ rewrite ch-all (s≤s (≤-reflexive refl)) xs
+ = refl 
 
 td-bu : ∀ {n} → (xs : Vec X (suc n))
       → td n xs ≡ bu n xs

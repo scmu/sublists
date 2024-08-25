@@ -57,3 +57,11 @@ ch-non-single {n = n} k 1+k≤1+n (x ∷ xs) k≠n with k ≟ n
 ... | no k≠n = ( mapB (_∷_ x) (ch k (s≤s⁻¹ 1+k≤1+n) xs) 
                , ch (suc k) (≤∧≢⇒< (s≤s⁻¹ 1+k≤1+n) k≠n) xs
                , refl)
+
+ch-all : {a : Set} {n : ℕ}
+   → (1+n≤1+n : 1 + n ≤ 1 + n)
+   → (xs : Vec a (1 + n)) → ch (1 + n) 1+n≤1+n xs ≡ Tn xs
+ch-all {n = zero} 1+n≤1+n (x ∷ xs) = refl 
+ch-all {n = suc n} 1+n≤1+n (x ∷ xs) with suc n ≟ suc n
+... | no 1+n≠1+n = ⊥-elim (1+n≠1+n refl) 
+... | yes refl = refl
