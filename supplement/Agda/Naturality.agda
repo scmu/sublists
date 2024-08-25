@@ -18,7 +18,6 @@ open import Algorithm
 open import Properties
 open import NatProperties
 
-
 snoc-natural : {a b : Set} {n : ℕ}
     → (f : a → b) (xs : Vec a n) (z : a)
     → map f (snoc xs z) ≡ snoc (map f xs) (f z) 
@@ -30,7 +29,18 @@ unTn-natural : {a b : Set} {n : ℕ}
     → f (unTn t) ≡ unTn (mapB f t) 
 unTn-natural f (Tn x) = refl
 unTn-natural f (N _ u) = ⊥-elim (invalidU u) 
-    
+
+subs-natural : {a b : Set} → {k : ℕ} 
+   → (f : a → b) → (xs : Vec a (suc k))
+   → map (map f) (subs xs) ≡ subs (map f xs) 
+subs-natural f (x ∷ []) = refl
+subs-natural f (x ∷ y ∷ xs) 
+  rewrite snoc-natural (map f) (map (_∷_ x) (subs (y ∷ xs))) (y ∷ xs) 
+  rewrite sym (map-compose (map f) (x ∷_) (subs (y ∷ xs)))
+  rewrite map-compose (f x ∷_) (map f) (subs (y ∷ xs))
+  rewrite subs-natural f (y ∷ xs)
+  = refl
+
 zipBW-natural : {a b c d e s : Set} {i n : ℕ}
   → (h : a → b) (f : c → d → a) 
   → (k : e → s → b) (g : c → e) (r : d → s) 

@@ -23,6 +23,15 @@ open import Properties
 open import Naturality
 open import ThmUpgrade
 
+td-td' : ∀ n → (xs : Vec X (suc n))
+  → td n xs ≡ td' n (map f xs)
+td-td' zero (x ∷ []) = refl
+td-td' (suc n) (x ∷ xs) 
+  rewrite sym (subs-natural f (x ∷ xs)) 
+  rewrite sym (map-compose (td' n) (map f) (subs (x ∷ xs)))
+  rewrite map-cong (td n) (td' n ∘ map f) (td-td' n) (subs (x ∷ xs))
+  = refl
+
 mapB-td'-expand : ∀ {n k m} 
   → (t : B (Vec Y (2 + n)) k m)
   → mapB (td' (1 + n)) t ≡ 
@@ -30,23 +39,48 @@ mapB-td'-expand : ∀ {n k m}
 mapB-td'-expand (T0 _) = refl
 mapB-td'-expand (Tn _) = refl
 mapB-td'-expand {n} (N t u) 
-   rewrite mapB-compose g 
-            (λ xs → map (td' n) (subs xs)) t 
-         | mapB-compose g 
-            (λ xs → map (td' n) (subs xs)) u 
+   rewrite mapB-compose g (λ xs → map (td' n) (subs xs)) t 
+         | mapB-compose g (λ xs → map (td' n) (subs xs)) u 
    rewrite mapB-compose (map (td' n)) subs t 
          | mapB-compose (map (td' n)) subs u = refl
 
-lemma1 : {n m : ℕ}  
+td'-repeatUp : {n m : ℕ}  
   → (n<m : n < m) → (0<m : 0 < m) 
   → (xs : Vec Y m)
   → (mapB (td' n) ∘ ch (1 + n) n<m) xs ≡ 
       (repeatUp n n<m ∘ mapB ex ∘ ch 1 0<m) xs
-lemma1 {zero} 0<m' 0<m xs rewrite ≤-irrelevant 0<m' 0<m = refl
-lemma1 {suc n} 1+n<m 0<m xs 
+td'-repeatUp {zero} 0<m' 0<m xs rewrite ≤-irrelevant 0<m' 0<m = refl
+td'-repeatUp {suc n} 1+n<m 0<m xs 
  rewrite mapB-td'-expand (ch (2 + n) 1+n<m xs)
- rewrite sym (thm1 (s≤s z≤n) 1+n<m xs)
+ rewrite sym (up-ch (s≤s z≤n) 1+n<m xs)
  rewrite sym (up-natural (td' n) (s≤s z≤n) 1+n<m (ch (suc n) (<⇒≤ 1+n<m) xs))
- rewrite lemma1 (<⇒≤ 1+n<m) 0<m xs
+ rewrite td'-repeatUp (<⇒≤ 1+n<m) 0<m xs
  rewrite ≤-irrelevant (1+m≤n⇒m≤n 1+n<m) (<⇒≤ 1+n<m)
+ = refl
+
+subs-ch : {a : Set} {n : ℕ}
+        → (0<n : 0 < n)
+        → (xs : Vec a (suc n)) 
+        → subs xs ≡ (unTn ∘ up 0<n ≤-refl ∘ ch n (<⇒≤ ≤-refl)) xs 
+subs-ch 0<n xs = {!   !} 
+
+ -- td : (n : ℕ) → (xs : Vec X (suc n)) → Y
+
+td-bu : ∀ {n} → (xs : Vec X (suc n))
+      → td n xs ≡ bu n xs
+td-bu {zero} (x ∷ []) = refl
+td-bu {suc n} xs 
+ rewrite td-td' (suc n) xs
+ rewrite subs-ch (s≤s z≤n) (map f xs)
+ rewrite unTn-natural (g ∘ map (td' n)) 
+               (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl)))
+                   (ch (suc n) (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (map f xs)))
+ rewrite mapB-compose g (map (td' n))
+               (up (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl)))
+                   (ch (suc n) (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (map f xs)))
+ rewrite sym (up-natural (td' n) (s≤s z≤n) (s≤s (s≤s (≤-reflexive refl))) 
+               (ch (suc n) (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (map f xs)))
+ rewrite td'-repeatUp (s≤s (<⇒≤ (s≤s (≤-reflexive refl)))) (s≤s z≤n) (map f xs)
+ rewrite ≤-irrelevant (s≤s {n} (1+m≤n⇒m≤n (s≤s (≤-reflexive refl))))
+                      (s≤s (<⇒≤ (s≤s (≤-reflexive refl))))
  = refl

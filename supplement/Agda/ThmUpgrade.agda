@@ -31,7 +31,7 @@ ch-all-Tn {a} (suc n) (s≤s p) (x ∷ y ∷ ys) with suc n ≟ suc n
 ... | no 1+n≠1+n = ⊥-elim (1+n≠1+n refl)
 
 subs-single : {a : Set} {z : a} 
-   → (xs : Vec a 1) → (λ x → (z ∷ []) ∷ x ∷ []) xs ≡ (λ xs → subs (z ∷ xs)) xs
+   → (xs : Vec a 1) → (λ xs → (z ∷ []) ∷ xs ∷ []) xs ≡ (λ xs → subs (z ∷ xs)) xs
 subs-single (x ∷ []) = refl
 
 zip-snoc-subs : {a : Set} {m n k : ℕ} 
@@ -43,24 +43,24 @@ zip-snoc-subs z (Tn (x ∷ xs)) = refl
 zip-snoc-subs z (N t u) 
   rewrite zip-snoc-subs z t | zip-snoc-subs z u = refl
 
--- Theorem 1
+-- The main theorem regarding up.
 
-thm1 : {k n : ℕ} {a : Set} → (p : 0 < k) → (q : k < n) 
-     → (xs : Vec a n) 
-     → up p q (ch k (<⇒≤ q) xs) ≡ mapB subs (ch (suc k) q xs) 
-thm1 {suc k} {.1} _ (s≤s ()) (x ∷ [])
+up-ch : {k n : ℕ} {a : Set} → (p : 0 < k) → (q : k < n) 
+      → (xs : Vec a n) 
+      → up p q (ch k (<⇒≤ q) xs) ≡ mapB subs (ch (suc k) q xs) 
+up-ch {suc k} {.1} _ (s≤s ()) (x ∷ [])
 
-thm1 {suc zero} {.(2+ zero)} _ _ (x ∷ y ∷ []) = refl
+up-ch {suc zero} {.(2+ zero)} _ _ (x ∷ y ∷ []) = refl
 
-thm1 {2+ k} {.(2+ zero)} _ (s≤s (s≤s ())) (x ∷ y ∷ [])
+up-ch {2+ k} {.(2+ zero)} _ (s≤s (s≤s ())) (x ∷ y ∷ [])
 
-thm1 {k} {2+ (suc n)} _ 3+≤3+ (x ∷ xs) with k ≟ 2+ n
+up-ch {k} {2+ (suc n)} _ 3+≤3+ (x ∷ xs) with k ≟ 2+ n
 ... | yes refl with suc n ≟ 2+ n 
 ... | yes ()
 ... | no 1+≠2+ with 3+≤3+
 ... | s≤s (s≤s (s≤s n≤n)) 
  rewrite ch-all-Tn (suc n) (s≤s (≤∧≢⇒< (<⇒≤ (s≤s n≤n)) (λ x₁ → 1+≠2+ (cong suc x₁)))) xs
- with thm1 {suc n} {2+ n} (s≤s z≤n) (s≤s (≤-reflexive refl)) xs
+ with up-ch {suc n} {2+ n} (s≤s z≤n) (s≤s (≤-reflexive refl)) xs
 ... | ind
  with xs 
 ... | y ∷ ys 
@@ -75,8 +75,8 @@ thm1 {k} {2+ (suc n)} _ 3+≤3+ (x ∷ xs) with k ≟ 2+ n
  rewrite ind
  = refl
 
-thm1 {suc zero} {2+ (suc n)} _ 2≤3+ (x ∷ xs) | no 1≠2+n 
- with thm1 {1} (s≤s z≤n) (s≤s (s≤s z≤n)) xs 
+up-ch {suc zero} {2+ (suc n)} _ 2≤3+ (x ∷ xs) | no 1≠2+n 
+ with up-ch {1} (s≤s z≤n) (s≤s (s≤s z≤n)) xs 
 ... | ind with xs
 ... | y ∷ ys 
  rewrite ≤-irrelevant (≤∧≢⇒< (s≤s⁻¹ (<⇒≤ 2≤3+)) (≡⇒≡ᵇ 0 (2+ n))) (s≤s z≤n) 
@@ -89,7 +89,7 @@ thm1 {suc zero} {2+ (suc n)} _ 2≤3+ (x ∷ xs) | no 1≠2+n
             subs-single (ch 1 (s≤s z≤n) ys)
  = refl
 
-thm1 {2+ k} {2+ (suc n)} 1≤2+k 3+k≤3+n (x ∷ xs) | no 2+k≠2+n with suc k ≟ 2+ n
+up-ch {2+ k} {2+ (suc n)} 1≤2+k 3+k≤3+n (x ∷ xs) | no 2+k≠2+n with suc k ≟ 2+ n
 ... | yes refl = ⊥-elim (<-irrefl refl 3+k≤3+n) 
 ... | no 1+k≠2+n
  with ch-non-single k (s≤s⁻¹ (<⇒≤ 3+k≤3+n)) xs 1+k≠2+n 
@@ -100,7 +100,7 @@ thm1 {2+ k} {2+ (suc n)} 1≤2+k 3+k≤3+n (x ∷ xs) | no 2+k≠2+n with suc k 
  rewrite ch₀ | ch₁
  rewrite up-natural (x ∷_) (s≤s z≤n) (s≤s⁻¹ 3+k≤3+n) (N t₀ t₁)
  rewrite sym ch₀
- with thm1 (s≤s z≤n) (s≤s⁻¹ 3+k≤3+n) xs
+ with up-ch (s≤s z≤n) (s≤s⁻¹ 3+k≤3+n) xs
 ... | ind
  rewrite ≤-irrelevant (s≤s⁻¹ (<⇒≤ 3+k≤3+n)) (<⇒≤ (s≤s⁻¹ 3+k≤3+n))
  rewrite ind
@@ -108,6 +108,6 @@ thm1 {2+ k} {2+ (suc n)} 1≤2+k 3+k≤3+n (x ∷ xs) | no 2+k≠2+n with suc k 
  rewrite ≤-irrelevant (≤∧≢⇒< (<⇒≤ (s≤s⁻¹ 3+k≤3+n)) 1+k≠2+n) (s≤s⁻¹ 3+k≤3+n)
  rewrite zip-snoc-subs x (ch (2+ k) (s≤s⁻¹ 3+k≤3+n) xs)
  rewrite ≤-irrelevant (s≤s⁻¹ 3+k≤3+n) (<⇒≤ (s≤s (bounded u₁)))
- rewrite thm1 (s≤s z≤n) (s≤s (bounded u₁)) xs
+ rewrite up-ch (s≤s z≤n) (s≤s (bounded u₁)) xs
  rewrite ≤-irrelevant (≤∧≢⇒< (<⇒≤ (s≤s (bounded u₁))) 2+k≠2+n) (s≤s (bounded u₁))
  = refl
