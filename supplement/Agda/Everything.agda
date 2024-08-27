@@ -19,7 +19,7 @@ open import NatProperties
 open import Properties
   -- other misc. but important properties 
 open import ThmUpgrade
-  -- the main theorem about upgrade, that 
+  -- the main theorem about up -- that 
   -- it meets the specification
 open import ThmBU 
   -- that td = bu
