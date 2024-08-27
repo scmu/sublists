@@ -1,44 +1,44 @@
-From: Journal of Functional Programming <onbehalfof@manuscriptcentral.com>
-Subject: JFP-2023-0024 - Decision on Manuscript
-Date: April 29, 2024 at 10:08:09 PM GMT+8
-To: scm@iis.sinica.edu.tw
-Cc: dreyer@mpi-sws.org, g.k.keller@uu.nl, jfp-ed@cambridge.org, jfp-editors-calculation@googlegroups.com, scm@iis.sinica.edu.tw
-Reply-To: jfp-editors-calculation@googlegroups.com
 
-Dear Dr Mu,
+Dear Editors and Reviewers,
 
-Manuscript ID JFP-2023-0024 entitled "Bottom-Up Computation Using Trees of Sublists" which you submitted to the JFP Special Issue on Program Calculation, has been reviewed.  The comments of the reviewers are included at the bottom of this letter.
+The author would like to thank the reviewers for their comments,
+and the editors for their efforts producing this special issue,
+and for allowing additional time for revising this submission.
+This revision has gone through a number of changes,
+streamlining, and additions. In particular:
 
-Although this work may potentially be published in Journal of Functional Programming, the reviewers have suggested some revisions to your manuscript.  Therefore, I invite you to respond to the reviewers' comments and revise your manuscript.
+* We now have a complete Agda proof of the theorem/properties
+  in this pearl, available at
+    https://github.com/scmu/sublists/tree/main/supplement/Agda
+  which will hopefully relieve the doubts regarding partiality
+  of many of the functions.
 
-As suggested by reviewer 1, please consider using more descriptive and accessible identifiers where this is appropriate.  Reviewer 2 comments that it would be beneficial to explain what lessons can be learned that could be applied to other kinds of programs, and feels that the presentation needs to be improved to qualify as a
-pearl.  Reviewer 3 identifies a number of possible areas for improving the paper.  The author should also consider whether the revised version would be more suitable as a research paper than a functional pearl.
+* Tried to be clearer on what values are in the domain of a
+  function (e.g. non-empty lists only) in a number of places.
 
-To revise your manuscript, log into https://mc.manuscriptcentral.com/jfp_submit and enter your Author Center, where you will find your manuscript title listed under "Manuscripts with Decisions."  Under "Actions," click on "Create a Revision."  Your manuscript number has been appended to denote a revision.
+* Issues regarding notation:
+  - the functorial mapping `B` and `L` has been changed to `mapB`
+    and `map`.
+  - The use of point-free notation has been reduced (but still
+    used in some places. See the explanation.)
 
-You will be unable to make your revisions on the originally submitted version of the manuscript.  Instead, please upload your revised manuscript through your Author Center.
+* The end of Section 1 has been revised to make the purpose of
+  this submission clear.
 
-When submitting your revised manuscript, you will be able to respond to the comments made by the referees in the space provided.  You can use this space to document any changes you make to the original manuscript.  In order to expedite the processing of the revised manuscript, please be as specific as possible in your response to the reviewers.
+* The last section has been rewritten and streamlined.
+  It now focuses more on what the author has done and learned.
+  Related works are still discussed, but focusing more on the
+  historical context rather than unnecessary and confusing technical
+  details.
 
-IMPORTANT:  Your original files are available to you when you upload your revised manuscript.  Please delete any redundant files before completing the submission.
+* Meanwhile, the Agda code for `up` has been moved to an appendix,
+  following the advice of a reviewer.
 
-Please submit your revised manuscript by 12th July 2024.
+* The proof in Section 5 has been streamlined.
 
-Once again, thank you for submitting your manuscript to the Journal of Functional Programming and we look forward to receiving your revision.
+The following are responses to individual reviewers.
 
-Sincerely,
-
-Graham Hutton and Nicolas Wu
-Guest Editors, JFP Special Issue on Program Calculation
-jfp-editors-calculation@googlegroups.com
-
-
-Reviewers' Comments to Author:
-
-
-Referee: 1
-
-Comments to the Author
+=== Reviewer 1 ===
 
 This paper considers algorithms on a list where the overall result depends
 on the results of all subproblems on sublists of the list. Minimum edit
@@ -103,6 +103,7 @@ to everybody that td means "top down". (In comparison, when you define bu a litt
 > Added "(referring to ``top-down'')".
 
 *  line 118: You use the function "rep" to mean "repeat". I would suggest "rpt" or "repeat" instead, mostly because the name "rep" is often used to mean "representation". (See, for example, Bird's "Pearls of Functional Algorithm Design", page 129.)
+
 > Indeed. Used `repeat` instead.
 
 *  line 170: "...L subs. each step..." I think you mean "each" to be capitalized
@@ -120,7 +121,7 @@ that reference was omitted or accidentally removed?
 to mean in the case analysis. But a wider audience might not understand.
 Could you say something like "is" or "has the form" instead?
 
-> ???
+> Added a footnote explaining that (:=) stands for substitution.
 
 * line 314: "...from which can retrieve..." Missing word? Maybe "from
 which we can retrieve"?
@@ -137,9 +138,8 @@ Perhaps "then shunted" or "before being shunted"?
 
 > Changed to "being shunted".
 
-Referee: 2
 
-Comments to the Author
+=== Reviewer 2 ===
 
 Summary:
 
@@ -172,7 +172,31 @@ where b2l :: B a -> L a and l2b :: L a -> B a specify the correspondence between
 (Note: As Section 4.3 shows, the lists and binomial trees are isomorphic because of the shape constraint of the binomial trees. Thus, upgrade is definable if we disregard efficiency.)
 With this connection in mind, I would recommend the author merge Sections 2 and 3. I prefer to put Section 5 earlier, or at least, recommend providing formal connections (as mentioned above) between upgrade and up as well as choose and ch. Otherwise, the reader can hardly see what is going on.
 
-> ???
+> In this revision I added some information formally
+> relating `ch` and `choose`, and `up` and `upgrade` (namely
+> `flatten (ch k xs) = choose k xs`, and
+> `flatten (up (ch k xs)) = upgrade (choose k xs)` ),
+>
+> For several reasons I'd prefer to present Section 2 - 4 before 5.
+> Firstly, Section 4 is where we construct `up`, the main calculation
+> of this submission. I'd like to let the readers reach there quicker,
+> before they lose patience.
+>
+> Secondly, narrative-wise one cannot really start with Section 5.
+> To present the calculation we need to know what to perform in each
+> step (that is, `L g . upgrade`), and it is in Section 2 where we
+> motivate `L g . upgrade`. We then realize that `upgrade` would be
+> slow and we need some more structure, therefore we introduce the
+> tree B and `up`. If Section 5 were presented earlier, we now need
+> to go back to the calculation of `td = bu` again and either redo
+> the calculation or propagate the changes back, since the pre-
+> processing, the body, and the post-processing are all different now.
+> We will end up with a longer paper, with more tedious calculation.
+>
+> Currently, I mentioned in the end of Section 2 that we are looking
+> to construct bu = post . step^n . pre for some pre and post, and
+> we aim to prove that td = bu. I hope this gives the readers enough
+> outline.
 
 p2, Fig. 2:
 Please write that the numbers on the left are the levels.
@@ -191,11 +215,11 @@ The equation about bu is too loose. It only requires to be an n-steps loop (even
 p8, l334--342
 This reasoning might be the hardest. A more gentle explanation is hoped. For example, one may point out that (i) (subs . (x:)) duplicates the input, applies (L (x:) . subs) and id respectively, and then merges them by snoc, and (ii) this kind of computation can be simulated on the tree structure, by using zipBW, as (5) shows.
 
-> ???
+> This part has been rewritten.
 
 It might be better to put Fig. 5 in the appendix. Otherwise, a little more discussion concerning it seems necessary. Currently, the Agda program is just introduced and nearly nothing more. For example, can't you observe something from the viewpoint of the Curry-Howard correspondence?
 
-> ???
+> Moved Fig. 5 to the appendix.
 
 Section 6 contains several problems.
 - It contains several undefined notations (such as * and n-fold applications of functors) and cryptic functions (such as cd and dc). Readers cannot follow the discussion unless keeping Bird's article at hand.
@@ -204,8 +228,14 @@ Section 6 contains several problems.
 - p14, l622--624: "The moral of this story is that, [...]  the reason why they work could be very different."
  I could not agree with this argument. Bird's formalism aims to be more general than the current development. It is not surprising that fitting a particular problem to formalism sometimes requires additional nontrivial reasoning. I cannot regard such an additional reasoning as evidence of their differences.
 
+> This part has been rewritten.
+> In the details above I attempted to make a more technical
+> comparison between this work and that of Bird. This is perhaps
+> not that necessary: a functional pearl is supposed to be standalone
+> piece of work. In fact, given limited space, these paragraphs are
+> more confusing than informative. Thus they have been streamlined.
 
-Referee: 3
+=== Reviewer 3 ===
 
 Comments to the Author
 
@@ -261,7 +291,7 @@ Mu mostly works with partial functions. Some examples:
  Only intended to be applied to singleton lists/trees.
 
 * choose :: Nat → L a → L (L a)
- ch :: Nat → L a → B (L a)
+  ch :: Nat → L a → B (L a)
 
  Only intended to be used when the length of the second argument is
  greater than or equal to the first argument.
@@ -279,6 +309,19 @@ Agda. I would have preferred to see everything developed in that
 style, because then it is clear what the preconditions are, and it is
 clear that the preconditions are satisfied (assuming that the code is
 well-typed). Some problems with the current presentation:
+
+> We now have Agda proofs of all the theorems and properties in
+> this paper, which will be submitted as supplement materials.
+> The notations of Agda, however, is not designed for manual
+> calculation, which is what this paper is about. What I mostly
+> do is perform manual calculation in this equational-reasoning
+> style to find out what we are proving (before we even have full
+> definitions of the functions involved), and use proof assistants
+> afterwards.
+>
+> The author has done some experiments of program construction
+> using the interface of Agda, but that would be the topic of a
+> different paper.
 
 * Mu did not explain why the application of td n in the body of td is
  OK. (Because subs returns lists of a given length.)
@@ -322,9 +365,6 @@ well-typed). Some problems with the current presentation:
 
 > The calculation now has an argument xs, and it is stated that xs
 > is of length at least 2. Hope that makes it clearer.
-> That unT is always applied to a singleton tree is actually from (7).
-> It was stated after (7) that "That |up| always returns a |T| can be
-> seen from the annotated types discussed in Section 4.3..."
 
 * Lemma 1 should presumably be restricted to lists of length at least
  1 + n (when n > 0), but no such restriction was given in the text.
@@ -347,7 +387,8 @@ some problems with the proof as given:
  above that is not necessarily the case for partial functions.
 
 > We have constructed a Agda proof of the theorems in this paper.
-> The "naturality" properties are proved for zipBW, unTn, and up.
+> The "naturality" properties are proved for zipBW, unTn, subs,
+> and up.
 
 * Mu derives some equations for up, and use these equations to
  implement up. However, these equations are overlapping: if two
@@ -409,7 +450,7 @@ When you introduce the Agda definition of B you could state explicitly
 that the N constructor is impossible if the two indices are equal.
 
 > That is indeed an important property that is not explicitly given.
-> Added some explanation after the introduction of |unTn|.
+> Added some explanation after the introduction of `unTn`.
 
 The Agda implementation of up matches on a proof. I think you could
 instead use a lemma on the right-hand side, and then the first two
@@ -436,8 +477,10 @@ Line 453, "correspond to diagonals in Pascal's Triangle": Do you mean
 Line 615, "expanded top-down algorithm": The top-down algorithm does
 not use B.
 
-> ???
+> This part has been rewritten.
 
 Please use DOI links in the list of references.
 
-> ???
+> Do you mean adding DOI URLs to the papers? I didn't see this done
+> in papers recently published in JFP, but I will add the links if
+> the editors request so.

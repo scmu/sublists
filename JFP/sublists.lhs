@@ -167,7 +167,8 @@ equipped with its |map| function |map' :: (a -> b) -> L a -> L b|.
 % Since we will use natural transformations and |map| a lot, for brevity we denote the |map| function of lists as |map' :: (a -> b) -> L a -> L b| (note that |map'| is written in italic font, to be distinguished from the type constructor |L|).
 
 The immediate sublists of a list can be specified in many ways.
-We use the definition below mainly because the order of sublists it generates is more intuitive for the readers:
+We use the definition below because it allows the proofs of this pearl to proceed in terms of cons-lists, which is familiar to most readers, while it also generates sublists in an order that is more intuitive:
+% for the readers:
 \begin{code}
 subs :: L a -> L (L a)
 subs []      = []
@@ -220,7 +221,7 @@ Here the function |ex :: L a -> a| takes a singleton list and extracts the only 
 The intention is that |td n| is a function defined on lists of length exactly |1+n|.
 The call |td n| in the body of |td (1+n)| is defined because |subs|, given an input of length |1+n|, returns lists of length |n|.
 Given input |xs|, the value we aim to compute is |h xs = td (length xs - 1) xs|.
-This definition will be handy later.
+%This definition will be handy later.
 
 The function |repeat k| composes a function with itself |k| times:
 \begin{spec}
@@ -322,7 +323,7 @@ Given \eqref{eq:up-spec-list}, we may let each step in the bottom-up algorithm b
 
 Equation \eqref{eq:up-spec-list} is a specification of |upgrade|, constructed by observation and generalisation.
 We want it to serve two purposes: 1. we wish to calculate from it a definition of |upgrade|, and 2. it plays a central role in proving that the bottom-up algorithm, also to be constructed, equals the top-down algorithm.
-That \eqref{eq:up-spec-list} (in fact, a modified version of it) does meet the purposes above will be formally justified later.
+That \eqref{eq:up-spec-list} (in fact, a stronger version of it) does meet the purposes above will be formally justified later.
 For now, we try to gain some intuition by demonstrating below that, with \eqref{eq:up-spec-list} satisfied, |map' g . upgrade| builds level |k+1| from level |k|.
 Let the input be |xs|. If |xs| is a singleton list, the bottom-up algorithm has finished, so we consider |xs| having length at least |2|.
 Recall that level |k| is |map' h (choose k xs)|. Applying |map' g . upgrade| to level |k|:
@@ -612,7 +613,7 @@ In summary, we have established
 \end{spec}
 
 \paragraph*{Case 3.2.~~} |0 < k| (and |k < length xs - 1|).
-In this more general case, we have to construct (\ref{eq:up3R}.1), that is |mapB (subs . (x:)) (ch (1+k) xs)|, out of the two subtrees, |mapB (x:) (ch k xs)| and |ch (1+k) xs|, without knowing what |x| is.
+In this case, we have to construct (\ref{eq:up3R}.1), that is |mapB (subs . (x:)) (ch (1+k) xs)|, out of the two subtrees, |mapB (x:) (ch k xs)| and |ch (1+k) xs|, without knowing what |x| is.
 
 What follows is perhaps the most tricky part of the derivation.
 Starting from |mapB (subs . (x:)) (ch (1+k) xs)|,
@@ -689,8 +690,10 @@ unT (T x) = x
 \end{code}
 %endif
 which is the mysterious four-line function in \cite{Bird:08:Zippy}!
-There is only one slight difference: where we use |snoc|, Bird used |(:)|, which has an advantage of being more efficient. Had we specified |choose| slightly differently, the |up| we derive would use |(:)| instead.
-Again, we defined |choose| this way merely for presentation: to generate sublists in an intuitive order. Changing to |(:)| should be a trivial matter.
+There is only one slight difference: where we use |snoc|, Bird used |(:)|, which has an advantage of being more efficient.
+Had we specified |subs| and |choose| differently, we would have derived the |(:)| version, but either the proofs so far would have to proceed in terms of snoc lists, or the sublists in our examples would come in a less intuitive order.
+For clarity, we chose to present this version.
+For curious readers, code of the |(:)| version of |up| is given in Appendix~\ref{sec:up-cons}.
 
 \begin{figure}[th]
 \centering
@@ -751,10 +754,11 @@ ch : (k : Nat) -> {n : Nat} -> k <= n -> Vec a n -> B (Vec a k) k n {-"~~,"-}
 where |Vec a n| denotes a list (vector) of length |n|.
 
 One can see that a pair of |(k,n)| uniquely determines the shape of the tree.
-Furthermore, it can also be proved that if a tree |B a k n| can be built at all, it must be the case that |k <= n|:
-\begin{spec}
-bounded    : B a k n        -> k <= n  {-"~~."-}
-\end{spec}
+Furthermore, one can also prove that |B a k n -> k <= n|, that is,
+if a tree |B a k n| can be built at all, it must be the case that |k <= n|.
+% \begin{spec}
+% bounded    : B a k n        -> k <= n  {-"~~."-}
+% \end{spec}
 
 The Agda implementation of |up| has the following type:
 \begin{spec}
@@ -935,7 +939,7 @@ derLma n =
 %%format mapF = "\Varid{F}"
 %format reps f = "{" f "}^{*}"
 
-We have derived the mysterious four-line function of \cite{Bird:08:Zippy}, and built upon that a bottom-up algorithm that solves the sublists problem.
+We have derived the mysterious four-line function of \cite{Bird:08:Zippy}, and built upon it a bottom-up algorithm that solves the sublists problem.
 The most tricky part was to find the right specification, which we did by observing what each layer represents, thinking about what we need to construct one layer from the previous one, and introducing a datatype that preserves the internal structure to ease the construction.
 Both sides of the specification \eqref{eq:up-spec-B} are expressions involving |up|, the function to be derived.
 In typical program calculation, one starts with a specification of the form
@@ -963,7 +967,7 @@ Bird had to introduce a new datatype |B|, and a new |cd| with type |B a -> B (L 
 That was not all, however.
 Bird also quickly introduced, on the last page of the paper, a new |dc' :: B a -> L (B a)|, which was as cryptic as |cd|, and claimed that |dc' . cd = mapF cd . dc'|.
 The relationship between |dc'| and |dc| (and the original problem) was not clear.
-In this pearl we took a shorter route, proving directly that the bottom-up algorithm works by repeatedly performing |mapB g . up|.
+In this pearl we took a shorter route, proving directly that the bottom-up algorithm works, and the step function is |mapB g . up|.
 
 %
 % In \cite{Bird:08:Zippy}, a generic top-down algorithm is defined by:
@@ -1043,6 +1047,25 @@ The first version of the Agda proofs were constructed by You-Zheng Yu.
 
 \appendix
 \renewcommand{\thesection}{\Alph{section}}
+
+\section{Variation of |up| That Uses |(:)|}
+\label{sec:up-cons}
+
+Show below is the variation of |up| that uses |(:)|.
+The function is called |cd| in \cite{Bird:08:Zippy}.
+{
+%{
+%format up' = up
+
+\begin{code}
+up' :: B a -> B (L a)
+up' (N (T p)  (T q)  ) = T [p, q]
+up' (N t      (T q)  ) = N (up' t) (mapB (:[q]) t)
+up' (N (T p)  u      ) = T (p : unT (up' u))
+up' (N t      u      ) = N (up' t) (zipBW (:) t (up' u))
+\end{code}
+%}
+}
 
 \section{Agda Implementation of |up|}
 \label{sec:agda:up}
