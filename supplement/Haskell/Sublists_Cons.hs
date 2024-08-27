@@ -1,12 +1,12 @@
 {-
   Haskell implementation of some of the functions in
 
-    Bottom-Up Computation Using Trees of Sublists
-    Shin-Cheng Mu
+    Bottom-Up Computation Using Trees of Sublists.
+    Shin-Cheng Mu, 2024.
 
   In this file we present an |up| that uses |(:)| instead of
   |snoc|, hence the name of this file.
-  However, the specification has to pattern match snoc lists, 
+  However, the specification has to pattern match snoc lists,
 -}
 
 {-# LANGUAGE ViewPatterns, PatternSynonyms #-}

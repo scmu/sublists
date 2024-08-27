@@ -1,8 +1,8 @@
 {-
   Haskell implementation of some of the functions in
 
-    Bottom-Up Computation Using Trees of Sublists
-    Shin-Cheng Mu
+    Bottom-Up Computation Using Trees of Sublists.
+    Shin-Cheng Mu, 2024.
 
   In this file we use cons lists in the specification,
   but construct an |up| that uses snoc in its implementation,
