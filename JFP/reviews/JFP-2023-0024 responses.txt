@@ -10,6 +10,7 @@ streamlining, and additions. In particular:
 * We now have a complete Agda proof of the theorem/properties
   in this pearl, available at
     https://github.com/scmu/sublists/tree/main/supplement/Agda
+  (and also uploaded as supplement material of this submission)
   which will hopefully relieve the doubts regarding partiality
   of many of the functions.
 
