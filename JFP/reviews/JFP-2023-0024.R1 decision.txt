@@ -1,0 +1,82 @@
+From: jfp-editors-calculation@googlegroups.com
+
+To: scm@iis.sinica.edu.tw
+
+CC: dreyer@mpi-sws.org, g.k.keller@uu.nl, jfp-ed@cambridge.org, jfp-editors-calculation@googlegroups.com, scm@iis.sinica.edu.tw
+
+Subject: JFP-2023-0024.R1 - Decision on Manuscript
+
+Body:
+
+Dear Dr. Mu:
+
+It is a pleasure to accept your manuscript entitled "Bottom-Up Computation Using Trees of Sublists" for publication in the Journal of Functional Programming Special Issue on Program Calculation.  Please address any additional comments from the reviewers, which can be found at the foot of this letter, before submitting the final files. You will be prompted to upload the final files via a future email.
+
+Journal of Functional Programming is Open Access. If your institution has a Transformative Agreement with Cambridge, the APC for this paper will be covered as part of the agreement (https://www.cambridge.org/core/services/open-access-policies/read-and-publish-agreements).
+
+If your institution is not part of a Transformative Agreement and other type of waivers do not apply to you (for example, Research4Life), the APC will be covered by the publication fund provided by our sponsors (see https://www.cambridge.org/core/journals/journal-of-functional-programming). If you would prefer for the APC not to be covered by the publication fund provided by our sponsors, please do get in touch with the Editorial Office (jfp-ed@cambridge.org).
+
+Thank you for your contribution to the journal.  On behalf of the Journal of Functional Programming, we look forward to your continued contributions to the Journal.
+
+Sincerely,
+
+Graham Hutton and Nicolas Wu
+Guest Editors, JFP Special Issue on Program Calculation
+jfp-editors-calculation@googlegroups.com
+
+
+Reviewers' Comments to Author:
+
+Referee: 1
+
+Comments to the Author
+In the presented draft, development becomes cleaner, and its aim and lesson become more apparent. I now evaluate it to achieve the quality of a pearl paper. I would agree with its acceptance.
+
+### Minor Comments
+p5, the first paragraph of Section 4:
+It might be worthwhile to explicitly remind here that map (x:) (choose k xs) and choose (1+k) xs are concatenated in the RHS of choose. Hence, the B-tree structure is naturally introduced by remembering two sub-computations by regarding ++ as a constructor.
+
+p8, l356:
+"duplicate each value in u to pairs"
+"u" must be in the italic shape.
+
+p9, the equation in l374:
+The equation is more like a fusion law rather than a naturality. As far as I can see, your calculation consists of several naturality laws:
+- zipBW f t u = mapB f . zipB t u
+- mapB h . map B f = mapB (h . f)
+- mapB (\(v, w) -> (g1 v, g2 w)) . zipB t u = zipB (mapB g1 u) (mapB g2 t))
+
+p13, the first paragraph of Section 6:
+"The most tricky part was to find the right specification"
+"the most tricky" was used in Case 3.2. It would be better to word it differently.
+By the way, I could not clearly understand this part, including the intended meaning of  "the right specification" here. From the current draft, the development of the specification, i.e., (1), seems not very difficult. Perhaps the author would mean something like (but I am unsure):
+"The development in case 3.2 is technically tricky but possible once we reach the right specification. The real difficulty is that when we get stacked in the calculation, we may hardly know which is the major source of the failure, the insufficiency of the specification, or the lack of a clever trick to bridge the gap."
+
+p13, l584:
+"Both sides of the specification (2) are expressions involving up, [...]. In typical program calculation,
+one starts with a specification of the form up t = rhs where rhs does not involve up [...]"
+The current wording might be misleading. For example, for developing a divide-and-conquer definition (so-called the list homomorphism) of h :: [A] -> B, we may consider the equation of the form h (x ++ y) = f (h x) (h y), in which both sides involves h, the function we would like to derive.
+
+
+Referee: 2
+
+Comments to the Author
+In my previous review I wrote the following:
+
+ "[…] there are lots of conditions to check to verify that the
+ arguments in the paper work out. When reading a functional pearl I
+ don't want to worry about things like that, especially when a
+ machine could verify all the conditions."
+
+Now there is some Agda code, but that code does not seem to have had
+much impact on the presentation in the paper, which still uses
+imprecise types and partial functions. For that reason I have little
+interest in spending more time on this paper.
+
+I gave "Reject" as my recommendation, but only because the system
+forced me to enter something. If others are happy with the paper I
+don't mind if it is published.
+
+Date Sent:
+
+17-Oct-2024

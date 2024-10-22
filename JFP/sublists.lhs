@@ -138,7 +138,7 @@ with clever encoding, they can be rephrased as problems defined on one list whos
 Many problems in additive combinatorics \citep{TaoVu:12:Additive} can also be cast into this form.
 
 But those are just bonuses.
-The application of a puzzle is being solved, and a functional pearl is a story about solving a puzzle.
+The application of a puzzle is being solved, a good puzzle is one that is fun to solve, and a functional pearl is a story about solving a puzzle.
 One sees a problem, wonders whether there is an elegant solution,
 finds the right specification,
 tries to calculate it,
@@ -364,8 +364,9 @@ Can we construct such an |upgrade|?
 
 We may proceed with \eqref{eq:up-spec-list} and construct |upgrade|.
 We will soon meet a small obstacle: in an inductive case
-|upgrade| will receive a list computed by |choose (1+k) (x:xs)| that
-needs to be split into |map' (x:) (choose k xs)| and |choose (1+k) xs|.
+|upgrade| will receive a list computed by |choose (1+k) (x:xs)|,
+that is, |map' (x:) (choose k xs)| and |choose (1+k) xs| concatenated by |(++)|,
+and split it back to the two lists.
 This can be done, but it is rather tedious.
 %
 This is a hint that some useful information has been lost when we represent levels by lists.
@@ -624,20 +625,26 @@ Let us consider |mapB (subs . (x:)) u| for a general |u|, and try to move |mapB 
 \item By definition, |subs (x:xs) = map' (x:) (subs xs) ++ [xs]|.
 That is, |subs . (x:) = \xs -> snoc (map' (x:) (subs xs)) xs| ---
 it duplicates the argument |xs| and applies |map' (x:) . subs| to one of them, before calling |snoc|.
-\item |mapB (subs . (x:))| does the above to \emph{each} value in the tree |u|.
-\item Equivalently, we may also duplicate each values in u to pairs, before applying |\(xs,xs') -> snoc (map' (x:) (subs xs)) xs'| to each pair.
-\item Values in |u| can be duplicated by zipping |u| to itself, that is, |zipBW (\xs -> (xs,xs)) u u|.
+\item |mapB (subs . (x:))| does the above to \emph{each} list in the tree |u|.
+\item Equivalently, we may also duplicate each values in |u| to pairs, before applying |\(xs,xs') -> snoc (map' (x:) (subs xs)) xs'| to each pair.
+\item Values in |u| can be duplicated by zipping |u| to itself, that is, |zipBW pair u u| where |pair xs xs' = (xs,xs')|.
 \end{itemize}
 With the idea above in mind, we calculate:
-\begin{spec}
-     mapB (subs . (x:)) u
-===    {- definition of |subs| -}
-     mapB (\xs -> snoc (map' (x:) (subs xs)) xs) u
-===    {- discussion above -}
-     mapB (\(xs,xs') -> snoc (map' (x:) (subs xs)) xs') (zipBW (\xs -> (xs,xs)) u u)
-===    {- |zipBW| natural -}
-     zipBW snoc (mapB (map' (x:) . subs) u) u {-"~~."-}
-\end{spec}
+%if False
+\begin{code}
+derLmaMapZip :: a -> B (L a) -> B (L (L a))
+derLmaMapZip x u =
+\end{code}
+%endif
+\begin{code}
+      mapB (subs . (x:)) u
+ ===    {- definition of |subs| -}
+      mapB (\xs -> snoc (map' (x:) (subs xs)) xs) u
+ ===    {- discussion above -}
+      mapB (\(xs,xs') -> snoc (map' (x:) (subs xs)) xs') (zipBW (\xs xs' -> (xs,xs')) u u)
+ ===    {- |zipBW| natural -}
+      zipBW snoc (mapB (map' (x:) . subs) u) u {-"~~."-}
+\end{code}
 We have shown that
 \begin{equation}
 \label{eq:map-sub-zipBW}
@@ -646,9 +653,17 @@ We have shown that
 which brings |mapB subs| next to |u|.
 The naturality of |zipBW| in the last step is the property that,
 provided that |h (f x y) = k (g x) (r y)|, we have:
-\begin{spec}
-  mapB h (zipBW f t u) = zipBW k (mapB g t) (mapB r u) {-"~~."-}
-\end{spec}
+%if False
+\begin{code}
+zipBWNatural :: (d -> c) -> (a -> b -> d)
+  -> (e -> f -> c) -> (a -> e) -> (b -> f)
+  -> B a -> B b -> B c
+zipBWNatural h f k g r t u =
+\end{code}
+%endif
+\begin{code}
+  mapB h (zipBW f t u) === zipBW k (mapB g t) (mapB r u) {-"~~."-}
+\end{code}
 
 Back to (\ref{eq:up3R}.1), we may then calculate:
 %if False
@@ -780,44 +795,6 @@ All the proofs in this pearl have been translated to Agda.%
 \footnote{Available at \url{https://github.com/scmu/sublists/tree/main/supplement/Agda}~.}
 For the rest of the pearl we switch back to non-dependently typed equational reasoning.
 
-%\begin{figure}
-%\centering
-%%{
-%\newcommand{\dash}{{\text{-}}}
-%%format sses = "\scaleobj{0.8}{\mathsf{s{\leq}s}}"
-%%format ssesi = "\scaleobj{0.8}{\mathsf{s{\leq}s}^{-1}}"
-%%format zsen = "\scaleobj{0.8}{\mathsf{z{\leq}n}}"
-%%format zsz = "\scaleobj{0.8}{0{\small <}0}"
-%%format snssn = "\scaleobj{0.8}{1{+}n\!<\!1{+}n}"
-%%format ssnsssn = "\scaleobj{0.8}{2{+}n\!<\!2{+}n}"
-%%format skssn = "\scaleobj{0.8}{1{+}k\!<\!1{+}n}"
-%%format ssksssn = "\scaleobj{0.8}{2{+}k\!<\!2{+}n}"
-%%format botelim = "{\bot}\dash\Varid{elim}"
-%%format serefl = "\scaleobj{0.8}{{\leq}\dash\Varid{refl}}"
-%%format sirrefl = "\scaleobj{0.8}{{<}\dash\Varid{irrefl}}"
-%%format (pf x) = "\textcolor{Tan}{" x "}"
-%{\small
-%\begin{spec}
-%up : pf (0 < k) -> pf (k < n) -> B a k n -> B (Vec a (suc k)) (suc k) n
-%up (pf zsz)    _    (T0 x)        = pf botelim (pf (sirrefl refl zsz))
-%up _  (pf snssn)    (Tn x)        = pf botelim (pf (sirrefl refl snssn))
-%up _  (pf ssnsssn)  (N (Tn _) _)  = pf botelim (pf (sirrefl refl ssnsssn))
-%
-%up _  _            (N (T0 p)     (Tn q)      )  = Tn (p :: q :: [])
-%up _  _            (N t@(N _ _)  (Tn q)      )  = Tn (snoc (unTn (up (pf (sses zsen)) (pf (sses serefl)) t)) q)
-%up _  _            (N (T0 p)     u@(N _ u')  )  = N  (mapB (\ q -> p :: q :: []) u)
-%                                                     (up (pf serefl) (pf (sses (bounded u'))) u)
-%up _ (pf ssksssn)  (N t@(N _ _) u@(N _ u'))     = N  (zipBW snoc (up (pf (sses zsen)) (pf (ssesi ssksssn)) t) u)
-%                                                     (up (pf (sses zsen)) (pf (sses (bounded u'))) u)
-%\end{spec}
-%}
-%%}
-%\caption{An Agda implementation of |up|.}
-%\label{fig:up-agda}
-%\end{figure}
-%}
-%% Agda stuffs
-
 \begin{figure}[t]
 \centering
 \includegraphics[width=0.8\textwidth]{pics/pascal-tri.pdf}
@@ -940,12 +917,14 @@ derLma n =
 %format reps f = "{" f "}^{*}"
 
 We have derived the mysterious four-line function of \cite{Bird:08:Zippy}, and built upon it a bottom-up algorithm that solves the sublists problem.
-The most tricky part was to find the right specification, which we did by observing what each layer represents, thinking about what we need to construct one layer from the previous one, and introducing a datatype that preserves the internal structure to ease the construction.
-Both sides of the specification \eqref{eq:up-spec-B} are expressions involving |up|, the function to be derived.
+The specifications \eqref{eq:up-spec-list} and \eqref{eq:up-spec-B} may look trivial in retrospect, but it did took the author a lot of efforts to discover them.
 In typical program calculation, one starts with a specification of the form
-|up t = rhs| where |rhs| does not involve |up|, and tries to pattern match on |t|, simplifies |rhs|, and finds an inductive definition of |up|.
-The author has tried to find such a specification with no avail, before settling down on \eqref{eq:up-spec-B}.
-Techniques for manipulating such specifications to find a solution for |up| is one of the lessons the author learned from this experience.
+|up t = rhs|, where |t|, the argument to the function to be derived, is a variable. One then tries to pattern match on |t|, simplifies |rhs|, and finds an inductive definition of |up|.
+The author has tried to find such a specification with no avail, before settling down on \eqref{eq:up-spec-list} and \eqref{eq:up-spec-B}, where |up| is applied to a function call.
+Once \eqref{eq:up-spec-B} is found, the rest of the development is tricky at times, but possible.
+The real difficulty is that when we get stuck in the calculation, we may hardly know which is the major source of the failure --- the insufficiency of the specification, or the lack of a clever trick to bridge the gap.
+Techniques for performing such calculations to find a solution for |up| is one of the lessons the author learned from this experience.
+%The most tricky part was to find the right specification, which we did by observing what each layer represents, thinking about what we need to construct one layer from the previous one, and introducing a datatype that preserves the internal structure to ease the construction.
 
 Some final notes on the previous works.
 The sublists problem was one of the examples of \cite{BirdHinze:03:Trouble}, a study of memoisation of functions, with a twist: the memo table is structured according to the call graph of the function, using trees of shared nodes (which they called \emph{nexuses}).
@@ -1120,8 +1099,8 @@ The right subtree being a |Tn| forces the other subtree |t| to have type
 The last clause receives inputs having type |B a (2+k) (2+n)|. Both |u| and |up t| have types |B ... (2+k) (1+n)| and, therefore, have the same shape.
 %}
 
-\bibliographystyle{common/jfplike}
-\bibliography{common/bib}
-%\input{sublists.bbl}
+%\bibliographystyle{common/jfplike}
+%\bibliography{common/bib}
+\input{sublists.bbl}
 
 \end{document}
